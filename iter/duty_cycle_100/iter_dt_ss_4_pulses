@@ -20,7 +20,9 @@ material_lib /root/data/matlib.sample
 element_lib /root/data/elelib.std
 data_library alaralib /opt/groupspace/shared/n/nukecode/ALARA/data/fendl2bin
 output zone
+ 	units Bq cm3
         number_density
+ 	specific_activity
 end
 #     flux name    fluxin file   norm   shift   unused
 flux  my_flux       ../ref_flux_files/iter_dt_flux_2.0986E14 1     0      default

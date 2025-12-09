@@ -30,7 +30,7 @@ output zone
 end
 
 #     flux name    fluxin file   norm   shift   unused
-flux  my_flux       ../../ref_flux_files/iter_dt_flux_2.0986E14 1     0      default
+flux  my_flux       ../../ref_flux_files/iter_dt_flux_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14_2.0986E14 1     0      default
 
 # Run for 4 FPY with 32 pulses
 schedule    my_schedule

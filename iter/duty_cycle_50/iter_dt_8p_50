@@ -1,0 +1,38 @@
+# This problem runs activation on two proposed ITER FW materials (Be and W)
+# A duty cycle of 90% for 4 FPY of irradiation time is assumed
+geometry rectangular
+volume
+     1    Be
+     1    W
+end
+mat_loading
+    Be    mix_1
+    W    mix_2
+end
+mixture mix_1
+    element be 1 1.0
+end
+mixture mix_2
+    element w 1 1.0
+end
+#Use default ALARA material and element libraries
+material_lib /root/data/matlib.sample
+element_lib /root/data/elelib.std
+data_library alaralib /opt/groupspace/shared/n/nukecode/ALARA/data/fendl2bin
+output zone
+ 	units Bq cm3
+        number_density
+ 	specific_activity
+end
+#     flux name    fluxin file   norm   shift   unused
+flux  my_flux       ../ref_flux_files/iter_dt_flux_2.0986E14 1     0      default
+# Run 4 FPY with dwell time 0.5y
+schedule    my_schedule
+    0.5 y my_flux ph_1 0  s
+end
+pulsehistory  ph_1
+    8    0.5   y
+end
+#other parameters
+truncation 1e-5
+dump_file dump_iter_dt_8p_50.file

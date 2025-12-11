@@ -5,6 +5,7 @@ import argparse
 import yaml
 import pandas as pd
 import sqlite3
+from sympy import symbols, Eq, solve
 
 def open_flux_file(flux_file):
     flux_lines = open(flux_file, 'r').readlines()
@@ -13,17 +14,19 @@ def open_flux_file(flux_file):
 def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     t_irr_arr = np.ndarray((len(num_pulses), len(duty_cycle_list)), dtype=float)
     dwell_time_arr = t_irr_arr.copy()
+    dwell_time = symbols('dwell_time')
     pulse_length_list = []
     
     for num_ind, num in enumerate(num_pulses):
         pulse_length = active_burn_time / num
         pulse_length_list.append(pulse_length)
         for duty_cycle_ind, duty_cycle in enumerate(duty_cycle_list):
-            dwell_time = pulse_length * (duty_cycle - 1)
-            dwell_time_arr[num_ind, duty_cycle_ind] = dwell_time
+            dwell_time_eq = Eq(pulse_length / (pulse_length + dwell_time), duty_cycle)
+            dwell_time_sol = solve((dwell_time_eq),(dwell_time))
+            dwell_time_arr[num_ind, duty_cycle_ind] = dwell_time_sol[0]
             # The total irradiation time can be calculated once the dwell time has been found
-            t_irr = pulse_length * num + dwell_time * (num - 1)
-            t_irr_arr[num_ind, duty_cycle_ind] = t_irr     
+            t_irr = pulse_length * num + dwell_time_sol[0] * (num - 1)
+            t_irr_arr[num_ind, duty_cycle_ind] = t_irr   
     return pulse_length_list, dwell_time_arr, t_irr_arr
              
 def write_out_adf(inputs):

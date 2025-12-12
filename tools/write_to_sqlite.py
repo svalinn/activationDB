@@ -33,7 +33,7 @@ def write_out_adf(inputs):
     #runs_list = [inputs['runs_100_4y'], inputs['runs_90_4y'], inputs['runs_50_4y'], inputs['runs_25_4y']]
     #start with one dictionary of runs first
     runs_list = [inputs['runs_100_4y']]
-    for runs_idx, runs in enumerate(runs_list):
+    for runs in runs_list:
         lib = aop.DataLibrary()
         adf = aop.DataLibrary.make_entries(lib, runs)
     return adf

@@ -35,7 +35,7 @@ def write_out_adf(inputs):
     runs_list = [inputs['runs_100_4y']]
     for runs in runs_list:
         lib = aop.DataLibrary()
-        adf = aop.DataLibrary.make_entries(lib, runs)
+        adf = lib.make_entries(runs)
     return adf
 
 def store_flux_lines(flux_lines, num_blocks):

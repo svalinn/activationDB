@@ -1,0 +1,46 @@
+# List of all outputs from 4FPY ITER DT simulations
+
+active_burn_time : 4 #years
+
+flux_file : /filespace/a/asrajendra/research/activationDB/ref_flux_files/iter_dt_flux_2.0986E14
+
+pulse_list :
+    - 2
+    - 4
+    - 8
+    - 32
+    - 64
+
+duty_cycles :
+    - 1
+    - 0.9
+    - 0.5
+    - 0.25
+
+runs_100_4y :
+    run1_100 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_100/output_100/iter_dt_ss_2p_out
+    run2_100 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_100/output_100/iter_dt_ss_4p_out
+    run3_100 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_100/output_100/iter_dt_ss_8p_out
+    run4_100 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_100/output_100/iter_dt_ss_32p_out
+    run5_100 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_100/output_100/iter_dt_ss_64p_out
+
+runs_90_4y :
+    run1_90 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_90/output_90/iter_dt_2p_90_out
+    run2_90 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_90/output_90/iter_dt_4p_90_out    
+    run3_90 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_90/output_90/iter_dt_8p_90_out
+    run4_90 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_90/output_90/iter_dt_32p_90_out
+    run5_90 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_90/output_90/iter_dt_64p_90_out
+
+runs_50_4y :
+    run1_50 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_50/output_50/iter_dt_2p_50_out
+    run2_50 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_50/output_50/iter_dt_4p_50_out
+    run3_50 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_50/output_50/iter_dt_8p_50_out  
+    run4_50 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_50/output_50/iter_dt_32p_50_out  
+    run5_50 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_50/output_50/iter_dt_64p_50_out
+
+runs_25_4y :
+    run1_25 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_25/output_25/iter_dt_2p_25_out
+    run2_25 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_25/output_25/iter_dt_4p_25_out    
+    run3_25 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_25/output_25/iter_dt_8p_25_out
+    run4_25 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_25/output_25/iter_dt_32p_25_out
+    run5_25 : /filespace/a/asrajendra/research/activationDB/write_sqlite_dir/iter/duty_cycle_25/output_25/iter_dt_64p_25_out   

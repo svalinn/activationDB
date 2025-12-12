@@ -29,11 +29,9 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
             t_irr_arr[num_ind, duty_cycle_ind] = t_irr   
     return pulse_length_list, dwell_time_arr, t_irr_arr
              
-def write_out_adf(inputs):
-    #runs_list = [inputs['runs_100_4y'], inputs['runs_90_4y'], inputs['runs_50_4y'], inputs['runs_25_4y']]
-    #start with one dictionary of runs first
-    runs_list = [inputs['runs_100_4y']]
-    for runs in runs_list:
+def write_out_adf(runs_list):
+    #start with one dictionary of runs (runs_list[0]) first
+    for runs in runs_list[0]:
         lib = aop.DataLibrary()
         adf = lib.make_entries(runs)
     return adf
@@ -132,10 +130,11 @@ def main():
     active_burn_time = inputs['active_burn_time']
     duty_cycle_list = inputs['duty_cycles']
     num_pulses = inputs['pulse_list'] 
+    runs_list = [inputs['runs_100_4y'], inputs['runs_90_4y'], inputs['runs_50_4y'], inputs['runs_25_4y']]
 
     flux_lines = open_flux_file(flux_file)
     pulse_length_list, dwell_time_arr, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
-    adf = write_out_adf(inputs)
+    adf = write_out_adf(runs_list)
     num_blocks = adf['block_num'].nunique()
     bin_widths, flux_array = parse_flux_lines(flux_lines, num_blocks)
     norm_flux_array, total_flux = normalize_flux_spectrum(flux_array, bin_widths, num_blocks)

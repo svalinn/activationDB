@@ -1,6 +1,7 @@
 import argparse
 import yaml
 import numpy as np
+import openmc
 from sympy import symbols, Eq, solve
 
 def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
@@ -28,8 +29,6 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
             t_irr = pulse_length * num + dwell_time_sol[0] * (num - 1) # the dwell time is applied to the first N-1 pulses
             t_irr_arr[num_idx, duty_cycle_idx] = t_irr   
     return pulse_length_list, dwell_time_arr, t_irr_arr
-import openmc
-import numpy as np
 
 def open_flux_file(flux_file):
     with open(flux_file, 'r') as flux_data:

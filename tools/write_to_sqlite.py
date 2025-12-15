@@ -38,10 +38,7 @@ def write_out_adf(runs_list):
 
 def parse_flux_lines(flux_lines, num_blocks):
     energy_bins = openmc.mgxs.GROUP_STRUCTURES['VITAMIN-J-175'] 
-    bin_widths = []
-    for bin_index in range(len(energy_bins) - 1):
-        bin_width = energy_bins[bin_index + 1] - energy_bins[bin_index]
-        bin_widths.append(bin_width)
+    bin_widths = energy_bins[1:] - energy_bins[:-1]
 
     all_entries = []
     for flux_line in flux_lines:

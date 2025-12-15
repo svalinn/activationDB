@@ -4,7 +4,8 @@ import openmc
 import numpy as np
 
 def open_flux_file(flux_file):
-    flux_lines = open(flux_file, 'r').readlines()
+    with open(flux_file, 'r') as flux_data:
+        flux_lines = flux_data.readlines()
     return flux_lines
 
 def parse_flux_lines(flux_lines):

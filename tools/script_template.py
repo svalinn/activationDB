@@ -11,10 +11,10 @@ def open_flux_file(flux_file):
 def parse_flux_lines(flux_lines):
     '''
     Uses provided list of flux lines and group structure applied to the run to create an array of flux entries, with:
-    # rows = # flux entries / # group structure bins
+    # rows = # of intervals = total # flux entries / # group structure bins
     # columns = # group structure bins
     input : flux_lines (list of lines from ALARA flux file)
-    output : flux_array (numpy array of shape # zones/intervals/mixtures x )
+    output : flux_array (numpy array of shape # intervals x number of energy groups)
     '''
     energy_bins = openmc.mgxs.GROUP_STRUCTURES['VITAMIN-J-175']     
     bin_widths = energy_bins[1:] - energy_bins[:-1]

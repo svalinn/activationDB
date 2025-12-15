@@ -8,6 +8,7 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     Uses provided pulsing information to determine dwell time and total irradiation time.
     Assumes that the active irradiation time per pulse and dwell time between pulses both remain constant in any given simulation.
     Iterates over the number of pulses, and for each number, calculates dwell time.
+    The duty cycle is defined as the pulse length / (pulse length + dwell time).
     inputs:
         active_burn_time : total active irradiation time (float) in any chosen unit
         duty_cycle_list : list of chosen duty cycles (float)

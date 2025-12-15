@@ -4,19 +4,6 @@ import alara_output_processing as aop
 import openmc
 import numpy as np
 
-def write_out_tables(run_out, run_lbl, time_unit):
-    '''
-    Takes the output of a single ALARA run and converts output tables to Pandas DataFrame
-    inputs: 
-        run_out (path to ALARA output file)
-        run_lbl (name of the run)
-        time_unit (units for cooling time)
-    output: output_tables (Pandas DataFrame containing all output data)
-    '''
-    alara_data = aop.FileParser(run_out, run_lbl, time_unit)
-    output_tables = alara_data.extract_tables()
-    return output_tables
-
 def open_flux_file(flux_file):
     flux_lines = open(flux_file, 'r').readlines()
     return flux_lines
@@ -61,8 +48,6 @@ def main():
     run_out = list(inputs['runs_100_4y'].values())[0]
     run_lbl = list(inputs['runs_100_4y'].keys())[0]
     time_unit = inputs['time_unit']
-
-    output_tables = write_out_tables(run_out, run_lbl, time_unit)
 
     flux_file = inputs['flux_file'] 
     flux_lines = open_flux_file(flux_file)

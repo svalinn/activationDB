@@ -1,6 +1,5 @@
 import argparse
 import yaml
-import alara_output_processing as aop
 import openmc
 import numpy as np
 

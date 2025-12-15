@@ -43,11 +43,7 @@ def read_yaml(yaml_arg):
 
 def main():        
     args = parse_args()
-    inputs = read_yaml(args.db_yaml) 
-
-    run_out = list(inputs['runs_100_4y'].values())[0]
-    run_lbl = list(inputs['runs_100_4y'].keys())[0]
-    time_unit = inputs['time_unit']
+    inputs = read_yaml(args.db_yaml)
 
     flux_file = inputs['flux_file'] 
     flux_lines = open_flux_file(flux_file)

@@ -1,0 +1,297 @@
+ALARA 2.9.2
+Schedule 'my_schedule':
+	pulse: 0.0625 y with 0 s delay pulsed with history ph_1
+Zone output requested:
+	Response Units: Bq /cm3
+	Number Density [atoms/cm3]
+	Specific Activity [Bq/cm3]
+
+
+*** Number Density [atoms/cm3] ***
+
+Zone #1: Be
+	Relative Volume: 1
+	Containing mixture: mix_1
+
+Total (All constituents) 
+	COMPACTED
+	Volume Fraction: 1	Relative Volume: 1
+Number Density [atoms/cm3]
+isotope	 shutdown   
+====================
+h-1 	3.6496e+18  
+h-2 	3.0923e+16  
+h-3 	1.6129e+19  
+he-3 	2.4080e+18  
+he-4 	5.4653e+20  
+he-6 	2.4681e+11  
+li-6 	1.8676e+19  
+li-7 	1.0957e+19  
+li-8 	3.8427e+06  
+li-9 	2.8846e+07  
+be-8 	2.0521e-04  
+be-9 	1.2328e+23  
+be-10 	1.1061e+18  
+b-10 	1.6734e+12  
+====================
+total	1.2388e+23  
+
+Zone #2: W
+	Relative Volume: 1
+	Containing mixture: mix_2
+
+Total (All constituents) 
+	COMPACTED
+	Volume Fraction: 1	Relative Volume: 1
+Number Density [atoms/cm3]
+isotope	 shutdown   
+====================
+h-1 	9.9555e+17  
+h-2 	5.2176e+15  
+h-3 	1.1810e+16  
+he-3 	2.2214e+15  
+he-4 	3.2301e+17  
+yb-173 	6.2823e+07  
+yb-174 	1.1915e+08  
+yb-175 	3.8671e+08  
+yb-176 	2.9473e+10  
+yb-176m	8.2688e+03  
+yb-177 	1.9400e+08  
+yb-177m	4.3759e+04  
+yb-178 	6.5235e+05  
+yb-179 	6.3856e-08  
+lu-174 	3.6066e-07  
+lu-174m	3.2162e-08  
+lu-175 	1.9046e+11  
+lu-176 	4.7998e+10  
+lu-176m	4.1053e+07  
+lu-177 	8.1470e+10  
+lu-177m	2.5851e+10  
+lu-178 	9.2093e+09  
+lu-178m	3.9530e+08  
+lu-179 	5.1568e+09  
+lu-180 	1.8124e+06  
+lu-181 	4.4984e+03  
+lu-182 	1.4761e-11  
+hf-175 	8.1290e+03  
+hf-176 	5.9687e+13  
+hf-177 	2.5742e+14  
+hf-177m	9.8935e+04  
+hf-177n	6.0009e+07  
+hf-178 	1.1461e+16  
+hf-178m	1.7403e+08  
+hf-178n	2.9630e+14  
+hf-179 	5.1334e+17  
+hf-179m	1.9836e+09  
+hf-179n	5.5327e+12  
+hf-180 	7.0378e+17  
+hf-180m	2.0411e+12  
+hf-181 	2.4101e+15  
+hf-182 	5.1097e+14  
+hf-182m	7.6501e+09  
+hf-183 	1.1951e+12  
+hf-184 	4.3702e+10  
+hf-185 	2.3259e+05  
+hf-186 	1.4573e+04  
+hf-187 	6.4059e+00  
+ta-177 	1.2265e+08  
+ta-178 	1.8736e+09  
+ta-178m	1.8090e+10  
+ta-179 	8.3518e+16  
+ta-180 	4.1528e+14  
+ta-180m	1.3579e+17  
+ta-181 	1.2565e+20  
+ta-182 	1.1568e+18  
+ta-182m	2.8539e+08  
+ta-182n	5.1204e+11  
+ta-183 	9.4807e+16  
+ta-184 	1.1928e+14  
+ta-185 	1.5719e+11  
+ta-186 	7.0067e+11  
+ta-187 	2.9372e+05  
+ta-188 	3.2996e+02  
+w-178 	8.9117e+08  
+w-179 	1.5264e+13  
+w-179m	1.0820e+11  
+w-180 	6.3474e+19  
+w-181 	4.9417e+18  
+w-182 	1.1944e+22  
+w-183 	1.1549e+22  
+w-183m	3.9784e+13  
+w-184 	2.1156e+22  
+w-185 	1.0490e+19  
+w-185m	6.1114e+13  
+w-186 	1.3010e+22  
+w-187 	4.0923e+18  
+w-188 	5.7586e+15  
+w-189 	2.5693e+08  
+re-182 	1.6484e+07  
+re-182m	2.9163e+06  
+re-183 	2.0873e+13  
+re-184 	4.1243e+16  
+re-184m	2.3299e+16  
+re-185 	2.7889e+20  
+re-186 	1.0525e+18  
+re-186m	4.6570e+18  
+re-187 	4.3654e+21  
+re-188 	6.6881e+17  
+re-188m	4.6070e+14  
+re-189 	8.6826e+13  
+re-190 	2.7043e+07  
+re-190m	6.8337e+07  
+os-183 	3.9935e+04  
+os-183m	4.3687e+03  
+os-184 	4.1049e+13  
+os-185 	4.1208e+16  
+os-186 	1.4015e+20  
+os-187 	1.0404e+19  
+os-188 	5.0552e+20  
+os-189 	1.5922e+19  
+os-189m	2.5707e+15  
+os-190 	2.0884e+18  
+os-190m	9.9138e+10  
+os-191 	4.8375e+14  
+os-191m	1.9216e+13  
+ir-191 	7.2136e+15  
+====================
+total	6.3197e+22  
+
+Totals for all zones.
+Number Density [atoms/cm3]
+zone	 shutdown   
+====================
+1	1.2388e+23  	Be (mix_1)
+2	6.3197e+22  	W (mix_2)
+====================
+
+
+
+
+
+*** Specific Activity [Bq/cm3] ***
+
+Zone #1: Be
+	Relative Volume: 1
+	Containing mixture: mix_1
+
+Total (All constituents) 
+	COMPACTED
+	Volume Fraction: 1	Relative Volume: 1
+Specific Activity [Bq/cm3]
+isotope	 shutdown   
+====================
+h-3 	2.8732e+10  
+he-6 	2.1170e+11  
+li-8 	3.1634e+06  
+li-9 	1.1214e+08  
+be-8 	2.0321e+12  
+be-10 	1.5184e+04  
+====================
+total	2.2726e+12  
+
+Zone #2: W
+	Relative Volume: 1
+	Containing mixture: mix_2
+
+Total (All constituents) 
+	COMPACTED
+	Volume Fraction: 1	Relative Volume: 1
+Specific Activity [Bq/cm3]
+isotope	 shutdown   
+====================
+h-3 	2.1038e+07  
+yb-175 	7.4046e+02  
+yb-176m	5.0276e+02  
+yb-177 	1.9775e+04  
+yb-177m	4.7319e+03  
+yb-178 	1.0184e+02  
+yb-179 	9.0330e-11  
+lu-174 	2.3922e-15  
+lu-174m	1.8169e-15  
+lu-176 	2.9184e-08  
+lu-176m	2.1476e+03  
+lu-177 	9.7413e+04  
+lu-177m	1.2891e+03  
+lu-178 	3.7461e+06  
+lu-178m	1.9769e+05  
+lu-179 	2.1637e+05  
+lu-180 	3.6733e+03  
+lu-181 	1.4848e+01  
+lu-182 	8.5265e-14  
+hf-175 	9.3165e-04  
+hf-177m	6.3497e+04  
+hf-177n	1.3505e+04  
+hf-178m	3.0157e+07  
+hf-178n	2.1008e+05  
+hf-179m	7.3645e+07  
+hf-179n	1.7673e+06  
+hf-180m	7.1454e+07  
+hf-181 	4.5623e+08  
+hf-182 	1.2479e+00  
+hf-182m	1.4370e+06  
+hf-183 	2.1572e+08  
+hf-184 	2.0426e+06  
+hf-185 	1.6122e+05  
+hf-186 	7.4274e+01  
+hf-187 	4.2694e-02  
+ta-177 	4.1713e+02  
+ta-178 	2.3249e+06  
+ta-178m	1.4751e+06  
+ta-179 	1.1395e+09  
+ta-180 	9.8958e+09  
+ta-180m	1.6570e-06  
+ta-182 	8.0913e+10  
+ta-182m	6.9899e+08  
+ta-182n	3.7344e+08  
+ta-183 	1.4914e+11  
+ta-184 	2.6398e+09  
+ta-185 	3.7059e+07  
+ta-186 	7.7090e+08  
+ta-187 	2.0359e+05  
+ta-188 	2.2871e+02  
+w-178 	3.3033e+02  
+w-179 	4.7024e+09  
+w-179m	1.9531e+08  
+w-181 	3.2770e+11  
+w-183m	5.3032e+12  
+w-185 	1.1206e+12  
+w-185m	4.2361e+11  
+w-187 	3.3037e+13  
+w-188 	6.6526e+08  
+w-189 	2.5810e+05  
+re-182 	4.9591e+01  
+re-182m	4.4232e+01  
+re-183 	2.3914e+06  
+re-184 	8.7157e+09  
+re-184m	1.1294e+09  
+re-186 	2.2358e+12  
+re-186m	5.1238e+05  
+re-187 	1.9190e+03  
+re-188 	7.5836e+12  
+re-188m	2.8614e+11  
+re-189 	6.8796e+08  
+re-190 	1.0078e+05  
+re-190m	4.1189e+03  
+os-183 	5.9147e-01  
+os-183m	8.5060e-02  
+os-185 	3.5307e+09  
+os-186 	1.6190e-03  
+os-189m	1.0300e+11  
+os-190m	1.1569e+08  
+os-191 	2.5193e+08  
+os-191m	2.8243e+08  
+====================
+total	5.0688e+13  
+
+Totals for all zones.
+Specific Activity [Bq/cm3]
+zone	 shutdown   
+====================
+1	2.2726e+12  	Be (mix_1)
+2	5.0688e+13  	W (mix_2)
+====================
+
+
+
+
+

@@ -67,8 +67,8 @@ def main():
     flux_lines = open_flux_file(flux_file)
     flux_array = parse_flux_lines(flux_lines)
 
-    active_burn_time = inputs['active_burn_time']
-    duty_cycle_list = inputs['duty_cycles']
+    active_burn_time = np.asarray(inputs['active_burn_time'])
+    duty_cycle_list = np.asarray(inputs['duty_cycles'])
     num_pulses = np.asarray(inputs['num_pulses'])
     pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
 

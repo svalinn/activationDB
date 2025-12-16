@@ -84,7 +84,7 @@ def main():
     pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
 
     total_flux = np.sum(flux_array, axis=1) #sum over the bin widths of flux array
-    calc_flux_mag_flattened(abs_dwell_times, num_pulses, total_flux, active_burn_time)
+    avg_flux_arr = calc_flux_mag_flattened(abs_dwell_times, num_pulses, total_flux, active_burn_time)
 
 if __name__ == "__main__":
     main()

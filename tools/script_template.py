@@ -1,7 +1,24 @@
 import argparse
 import yaml
-import openmc
 import numpy as np
+import openmc
+
+def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
+    '''
+    Uses provided pulsing information to determine dwell time and total irradiation time.
+    Assumes that the active irradiation time per pulse and dwell time between pulses both remain constant in any given simulation.
+    Iterates over the number of pulses, and for each number, calculates dwell time.
+    The duty cycle is defined as the pulse length / (pulse length + dwell time).
+    inputs:
+        active_burn_time : total active irradiation time (float) in any chosen unit
+        duty_cycle_list : list of chosen duty cycles (float)
+        num_pulses : list of number of pulses (int) that the active irradiation period is divided into
+    '''
+    pulse_lengths = active_burn_time / num_pulses
+    rel_dwell_times = (1 - duty_cycle_list) / duty_cycle_list
+    abs_dwell_times = np.outer(rel_dwell_times, pulse_lengths)
+    t_irr_arr = active_burn_time + abs_dwell_times * (num_pulses - 1)
+    return pulse_lengths, abs_dwell_times, t_irr_arr
 
 def open_flux_file(flux_file):
     with open(flux_file, 'r') as flux_data:
@@ -50,5 +67,10 @@ def main():
     flux_lines = open_flux_file(flux_file)
     flux_array = parse_flux_lines(flux_lines)
 
+    active_burn_time = np.asarray(inputs['active_burn_time'])
+    duty_cycle_list = np.asarray(inputs['duty_cycles'])
+    num_pulses = np.asarray(inputs['num_pulses'])
+    pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
+
 if __name__ == "__main__":
-    main()    
+    main()

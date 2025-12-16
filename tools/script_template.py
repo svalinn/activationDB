@@ -17,7 +17,7 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     pulse_lengths = np.array([active_burn_time / num for num in num_pulses])
     rel_dwell_times = np.array([(1 - duty_cycle) / duty_cycle for duty_cycle in duty_cycle_list])
     abs_dwell_times = np.outer(rel_dwell_times, pulse_lengths)
-    t_irr_arr = pulse_lengths * num_pulses + abs_dwell_times * (num_pulses - 1)
+    t_irr_arr = active_burn_time + abs_dwell_times * (num_pulses - 1)
     return pulse_lengths, abs_dwell_times, t_irr_arr
 
 def open_flux_file(flux_file):

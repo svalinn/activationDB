@@ -44,6 +44,17 @@ def parse_flux_lines(flux_lines):
     flux_array = all_entries.reshape(num_intervals, num_groups)
     return flux_array
 
+def calc_flux_mag_flattened(abs_dwell_times, num_pulses, total_flux, active_burn_time):
+    '''
+    Calculates an average flux magnitude for each interval defined in ALARA.
+    The flux is averaged over the total amount of time elapsed between the start of the first pulse and the end of the last.
+    inputs:
+        total_flux : value of the flux summed over all energy bins
+    '''
+    off_time = abs_dwell_times * (num_pulses - 1)
+    avg_flux_arr = np.multiply.outer(total_flux, active_burn_time / (active_burn_time + off_time))
+    return avg_flux_arr
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--db_yaml', default = "iter_dt_out.yaml", help="Path (str) to YAML containing inputs")
@@ -71,6 +82,9 @@ def main():
     duty_cycle_list = np.asarray(inputs['duty_cycles'])
     num_pulses = np.asarray(inputs['num_pulses'])
     pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
+
+    total_flux = np.sum(flux_array, axis=1) #sum over the bin widths of flux array
+    calc_flux_mag_flattened(abs_dwell_times, num_pulses, total_flux, active_burn_time)
 
 if __name__ == "__main__":
     main()

@@ -14,8 +14,8 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
         duty_cycle_list : list of chosen duty cycles (float)
         num_pulses : list of number of pulses (int) that the active irradiation period is divided into
     '''
-    pulse_lengths = np.array([active_burn_time / num for num in num_pulses])
-    rel_dwell_times = np.array([(1 - duty_cycle) / duty_cycle for duty_cycle in duty_cycle_list])
+    pulse_lengths = active_burn_time / num_pulses
+    rel_dwell_times = (1 - duty_cycle_list) / duty_cycle_list
     abs_dwell_times = np.outer(rel_dwell_times, pulse_lengths)
     t_irr_arr = active_burn_time + abs_dwell_times * (num_pulses - 1)
     return pulse_lengths, abs_dwell_times, t_irr_arr

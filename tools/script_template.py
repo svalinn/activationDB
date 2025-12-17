@@ -44,6 +44,18 @@ def parse_flux_lines(flux_lines):
     flux_array = all_entries.reshape(num_intervals, num_groups)
     return flux_array
 
+def calc_flux_mag_flattened(total_flux, active_burn_time, t_irr_arr):
+    '''
+    Calculates an average flux magnitude for each interval defined in ALARA.
+    The flux is averaged over the total amount of time elapsed between the start of the first pulse and the end of the last.
+    inputs:
+        total_flux : value of the flux summed over all energy bins
+    output:
+        avg_flux_arr : numpy array of average flux magnitudes, with shape len(total_flux) x len(duty_cycles) x len(num_pulses)    
+    '''
+    avg_flux_arr = np.multiply.outer(total_flux, active_burn_time / t_irr_arr)
+    return avg_flux_arr
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--db_yaml', default = "iter_dt_out.yaml", help="Path (str) to YAML containing inputs")
@@ -72,7 +84,8 @@ def main():
     num_pulses = np.asarray(inputs['num_pulses'])
     pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
 
-    total_flux = np.sum(flux_array, axis=1) # sum over the bin widths of flux array
+    total_flux = np.sum(flux_array, axis=1) #sum over the bin widths of flux array
+    avg_flux_arr = calc_flux_mag_flattened(total_flux, active_burn_time, t_irr_arr)
     # normalize flux spectrum by the total flux in each interval
     norm_flux_arr =  flux_array / total_flux.reshape(len(total_flux), 1) # 2D array of shape num_intervals x num_groups
 

@@ -7,6 +7,8 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     '''
     Uses provided pulsing information to determine dwell time and total irradiation time.
     Assumes that the active irradiation time per pulse and dwell time between pulses both remain constant in any given simulation.
+    (This is always maintained for a single-level schedule and single-level pulse history.)
+
     Iterates over the number of pulses, and for each number, calculates dwell time.
     The duty cycle is defined as the pulse length / (pulse length + dwell time).
     inputs:
@@ -72,9 +74,12 @@ def main():
     num_pulses = np.asarray(inputs['num_pulses'])
     pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
 
-    total_flux = np.sum(flux_array, axis=1) # sum over the bin widths of flux array
+    total_flux = np.sum(flux_array, axis=1) #sum over the bin widths of flux array
+    avg_flux_arr = calc_flux_mag_flattened(total_flux, active_burn_time, t_irr_arr)
     # normalize flux spectrum by the total flux in each interval
     norm_flux_arr =  flux_array / total_flux.reshape(len(total_flux), 1) # 2D array of shape num_intervals x num_groups
+    # for each interval, calculate flux averaged over time elapsed between the start of the 1st pulse and the end of the last
+    avg_flux_arr = np.multiply.outer(total_flux, active_burn_time / t_irr_arr) # array of shape num_intervals x len(duty_cycles) x len(num_pulses)
 
 if __name__ == "__main__":
     main()

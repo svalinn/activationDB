@@ -2,11 +2,16 @@ import argparse
 import yaml
 import numpy as np
 import openmc
+import json
+
+def calc_time_params_from_out(sch_dict)
 
 def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     '''
     Uses provided pulsing information to determine dwell time and total irradiation time.
     Assumes that the active irradiation time per pulse and dwell time between pulses both remain constant in any given simulation.
+    (This is always maintained for a single-level schedule and single-level pulse history.)
+
     Iterates over the number of pulses, and for each number, calculates dwell time.
     The duty cycle is defined as the pulse length / (pulse length + dwell time).
     inputs:
@@ -59,9 +64,17 @@ def read_yaml(yaml_arg):
         inputs = yaml.safe_load(yaml_file)
     return inputs
 
+def read_json(json_filename):
+    with open(json_filename, 'r') as json_file:
+        sch_dict = json.load(json_file)
+    return sch_dict    
+
 def main():        
     args = parse_args()
     inputs = read_yaml(args.db_yaml)
+
+    json_filename = inputs['json_filename']
+    sch_dict = read_json(json_filename)
 
     flux_file = inputs['flux_file'] 
     flux_lines = open_flux_file(flux_file)
@@ -72,9 +85,11 @@ def main():
     num_pulses = np.asarray(inputs['num_pulses'])
     pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
 
-    total_flux = np.sum(flux_array, axis=1) # sum over the bin widths of flux array
+    total_flux = np.sum(flux_array, axis=1) #sum over the bin widths of flux array
     # normalize flux spectrum by the total flux in each interval
     norm_flux_arr =  flux_array / total_flux.reshape(len(total_flux), 1) # 2D array of shape num_intervals x num_groups
+    # for each interval, calculate flux averaged over time elapsed between the start of the 1st pulse and the end of the last
+    avg_flux_arr = np.multiply.outer(total_flux, active_burn_time / t_irr_arr) # array of shape num_intervals x len(duty_cycles) x len(num_pulses)
 
 if __name__ == "__main__":
     main()

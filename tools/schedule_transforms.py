@@ -30,6 +30,25 @@ def compress_pulse_history(pulse_length, num_pulses):
 
     return t_irr_comp
 
+
+def flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time,
+                            num_final_pulses):
+    '''
+    Applies the flattening approximation to a series of pulses. Preserves an arbitrary
+    number of final pulses, and the total amount of time elapsed between the 
+    start of the first of the initial set of pulses and the end of the last. The
+    set of final pulses is considered to be exact in duration and delay time as the initial set.
+
+    :param pulse_length: (float) the duration of each initial pulse
+    :param num_tot_pulses: (int) the total number of pulses (initial + final)
+    :param dwell_time: (float) the duration of the gap between each initial pulse
+    :param num_final_pulses: (int) the number of final pulses
+    '''
+    num_init_pulses = num_tot_pulses - num_final_pulses
+    t_irr_flat_exact_pulses, ff_flat_exact_pulses = flatten_pulse_history(pulse_length, num_init_pulses, dwell_time)
+    return t_irr_flat_exact_pulses, ff_flat_exact_pulses
+
+
 def flatten_ph_levels(pulse_length, nums_pulses, dwell_times):
     '''
     Apply the flattening algorithm to all levels of a multi-level pulsing history
@@ -83,4 +102,3 @@ def compress_ph_levels(pulse_length, nums_pulses):
     for num_pulses in nums_pulses:
         tot_t_irr_comp = compress_pulse_history(tot_t_irr_comp, num_pulses)
     return tot_t_irr_comp
-

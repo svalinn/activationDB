@@ -75,14 +75,35 @@ def flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell
     :param nums_pulses: (iterable) number of pulses at each pulsing level
     :param ph_dwell_times: (iterable) the duration of the gap between each pulse at each pulsing level
     '''
-    tot_active_burn_times = 0
+    tot_active_burn_time = 0
     tot_sched_t_irr = 0
     for pulse_length, sched_dwell_time in zip(pulse_lengths, sched_dwell_times[:-1] + [0]): # ignore last schedule entry's dwell time
         ph_t_irr, ph_ff = flatten_ph_levels(pulse_length, nums_pulses, ph_dwell_times)
         tot_sched_t_irr += ph_t_irr + sched_dwell_time
-        tot_active_burn_times += ph_ff * ph_t_irr
-    tot_sched_ff = tot_active_burn_times / tot_sched_t_irr   
-    return tot_sched_t_irr, tot_sched_ff
+        tot_active_burn_time += ph_ff * ph_t_irr
+    return tot_sched_t_irr, tot_active_burn_time
+
+def flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times):
+    '''
+    Calculate irradiation time and flux factor for a series of schedules that each use a single pulse history in all entries.
+    A different pulse history may be used in each schedule.
+    This method does not account for sub-schedules.
+    
+    :param all_pulse_lengths: (iterable of iterables) of pulse lengths in the schedule entries, for all schedules
+    :param all_sched_dwell_times: (iterable of iterables) of dwell times in the schedule entries, for all schedules
+    :param all_nums_pulses: (iterable of iterables) of number of pulses at each pulsing level, for all pulse histories
+    :param all_ph_dwell_times: (iterable of iterables) of the duration of the gap between each pulse at each pulsing level, 
+                                for all pulse histories
+    '''
+    all_sched_t_irr = 0
+    all_sched_abt = 0
+    for pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times in zip(
+        all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times):
+        sched_t_irr, sched_active_burn_time = flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
+        all_sched_t_irr += sched_t_irr
+        all_sched_abt += sched_active_burn_time
+    tot_ff = all_sched_abt / all_sched_t_irr     
+    return all_sched_t_irr, tot_ff    
 
 def compress_ph_levels(pulse_length, nums_pulses):
     '''

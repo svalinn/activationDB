@@ -96,3 +96,32 @@ def compress_ph_levels(pulse_length, nums_pulses):
     for num_pulses in nums_pulses:
         tot_t_irr_comp = compress_pulse_history(tot_t_irr_comp, num_pulses)
     return tot_t_irr_comp
+
+def compress_simple_sched(pulse_lengths, nums_pulses):
+    '''
+    Calculate irradiation time for a schedule that uses a single pulse history in all entries.
+    This method does not account for sub-schedules.
+    
+    :param pulse_lengths: (iterable) of pulse lengths from the schedule entries
+    :param nums_pulses: (iterable) number of pulses at each pulsing level
+    '''
+    tot_sched_t_irr = 0
+    for pulse_length in pulse_lengths:
+        ph_t_irr = compress_ph_levels(pulse_length, nums_pulses)
+        tot_sched_t_irr += ph_t_irr
+    return tot_sched_t_irr
+
+def compress_mult_simple_scheds(all_pulse_lengths, all_nums_pulses):
+    '''
+    Calculate irradiation time for a series of schedules that each use a single pulse history in all entries.
+    A different pulse history may be used in each schedule.
+    This method does not account for sub-schedules.
+    
+    :param all_pulse_lengths: (iterable of iterables) of pulse lengths in the schedule entries, for all schedules
+    :param all_nums_pulses: (iterable of iterables) of number of pulses at each pulsing level, for all pulse histories
+    '''
+    all_sched_t_irr = 0
+    for pulse_lengths, nums_pulses in zip(all_pulse_lengths, all_nums_pulses):
+        sched_t_irr = compress_simple_sched(pulse_lengths, nums_pulses)
+        all_sched_t_irr += sched_t_irr   
+    return all_sched_t_irr

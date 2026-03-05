@@ -70,3 +70,25 @@ def test_flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_
     
     assert obs_tot_sched_tirr == exp_tot_sched_tirr
     assert obs_tot_sched_ff == exp_tot_sched_ff
+
+@pytest.mark.parametrize( "pulse_lengths,nums_pulses,exp_tot_sched_tirr",
+                          [
+                            ([1], [1,1], 1),
+                            ([2,2], [2,2], 16),
+                            ([1,1], [2,2], 8)
+                          ])
+def test_compress_simple_sched(pulse_lengths, nums_pulses, exp_tot_sched_tirr):
+    obs_tot_sched_tirr = st.compress_simple_sched(pulse_lengths, nums_pulses)
+    
+    assert obs_tot_sched_tirr == exp_tot_sched_tirr
+
+@pytest.mark.parametrize( "all_pulse_lengths, all_nums_pulses,exp_all_sched_tirr",
+                          [
+                            ([[1]], [[1,1]], 1),
+                            ([[1,2], [5,3]], [[2,2], [2,3]], 60),
+                            ([[1,2], [2,2]], [[2,2], [2,2]], 28)
+                          ])
+def test_compress_mult_simple_scheds(all_pulse_lengths, all_nums_pulses, exp_all_sched_tirr):
+    obs_all_sched_tirr = st.compress_mult_simple_scheds(all_pulse_lengths, all_nums_pulses)
+    
+    assert obs_all_sched_tirr == exp_all_sched_tirr

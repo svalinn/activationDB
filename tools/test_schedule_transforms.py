@@ -59,14 +59,26 @@ def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_tirr):
     assert obs_tot_tirr == exp_tot_tirr
 
 
-@pytest.mark.parametrize( "pulse_lengths,sched_dwell_times, nums_pulses,ph_dwell_times,exp_tot_sched_tirr,exp_tot_sched_ff",
+@pytest.mark.parametrize( "pulse_lengths,sched_dwell_times, nums_pulses,ph_dwell_times,exp_tot_sched_tirr,exp_tot_ff",
                           [
                             ([1], [1], [1,1], [1,1], 1, 1),
-                            ([2,2], [2,2], [2,2], [2,2], 30, 16/30),
-                            ([1,1], [10,10], [2,2], [1,2], 26, 8/26)
+                            ([1,2], [2,2], [2,2], [1,2], 22, 12/22),
+                            ([5,3], [3,4], [2,3], [1,1], 61, 48/61)
                           ])
-def test_flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times, exp_tot_sched_tirr,exp_tot_sched_ff):
-    obs_tot_sched_tirr, obs_tot_sched_ff = st.flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
+def test_flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times, exp_tot_sched_tirr,exp_tot_ff):
+    obs_tot_sched_tirr, obs_tot_ff = st.flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
     
     assert obs_tot_sched_tirr == exp_tot_sched_tirr
-    assert obs_tot_sched_ff == exp_tot_sched_ff
+    assert obs_tot_ff == exp_tot_ff
+
+@pytest.mark.parametrize( "all_pulse_lengths,all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times,exp_all_sched_tirr,exp_tot_ff",
+                          [
+                            ([[1]], [[1]], [[1,1]], [[1,1]], 1, 1),
+                            ([[1,2], [5,3]], [[2,2], [3,4]], [[2,2], [2,3]], [[1,2], [1,1]], 83, 60/83),
+                            ([[1,2], [2,2]], [[2,2], [2,2]], [[2,2], [2,2]], [[1,2], [2,2]], 52, 28/52)
+                          ])
+def test_flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times, exp_all_sched_tirr,exp_tot_ff):
+    obs_all_sched_tirr, obs_tot_ff = st.flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times)
+    
+    assert obs_all_sched_tirr == exp_all_sched_tirr
+    assert obs_tot_ff == exp_tot_ff   

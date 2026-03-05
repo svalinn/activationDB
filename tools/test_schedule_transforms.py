@@ -59,17 +59,17 @@ def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_tirr):
     assert obs_tot_tirr == exp_tot_tirr
 
 
-@pytest.mark.parametrize( "pulse_lengths,sched_dwell_times, nums_pulses,ph_dwell_times,exp_tot_sched_tirr,exp_tot_active_burn_time",
+@pytest.mark.parametrize( "pulse_lengths,sched_dwell_times, nums_pulses,ph_dwell_times,exp_tot_sched_tirr,exp_tot_ff",
                           [
                             ([1], [1], [1,1], [1,1], 1, 1),
-                            ([1,2], [2,2], [2,2], [1,2], 22, 12),
-                            ([5,3], [3,4], [2,3], [1,1], 61, 48)
+                            ([1,2], [2,2], [2,2], [1,2], 22, 12/22),
+                            ([5,3], [3,4], [2,3], [1,1], 61, 48/61)
                           ])
-def test_flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times, exp_tot_sched_tirr,exp_tot_active_burn_time):
-    obs_tot_sched_tirr, obs_tot_active_burn_time = st.flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
+def test_flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times, exp_tot_sched_tirr,exp_tot_ff):
+    obs_tot_sched_tirr, obs_tot_ff = st.flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
     
     assert obs_tot_sched_tirr == exp_tot_sched_tirr
-    assert obs_tot_active_burn_time == exp_tot_active_burn_time
+    assert obs_tot_ff == exp_tot_ff
 
 @pytest.mark.parametrize( "all_pulse_lengths,all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times,exp_all_sched_tirr,exp_tot_ff",
                           [

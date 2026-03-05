@@ -81,7 +81,8 @@ def flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell
         ph_t_irr, ph_ff = flatten_ph_levels(pulse_length, nums_pulses, ph_dwell_times)
         tot_sched_t_irr += ph_t_irr + sched_dwell_time
         tot_active_burn_time += ph_ff * ph_t_irr
-    return tot_sched_t_irr, tot_active_burn_time
+    tot_sched_ff = tot_active_burn_time / tot_sched_t_irr    
+    return tot_sched_t_irr, tot_sched_ff
 
 def flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times):
     '''
@@ -99,9 +100,9 @@ def flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_num
     all_sched_abt = 0
     for pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times in zip(
         all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times):
-        sched_t_irr, sched_active_burn_time = flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
+        sched_t_irr, sched_ff = flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
         all_sched_t_irr += sched_t_irr
-        all_sched_abt += sched_active_burn_time
+        all_sched_abt += sched_t_irr * sched_ff
     tot_ff = all_sched_abt / all_sched_t_irr     
     return all_sched_t_irr, tot_ff    
 

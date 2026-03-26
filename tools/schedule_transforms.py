@@ -65,9 +65,8 @@ def flatten_ph_levels(pulse_length, nums_pulses, dwell_times):
     return tot_t_irr_flat, tot_ff_flat
 
 def flatten_sub_sched(child_dicts,
-                      sched_delay_dur=0,
-                      sched_np=[1],
-                      sched_ph_dt=[0]):
+                      pulse_history=[(1,0)],
+                      delay=0):
     '''
     Calculate irradiation time and flux factor for a schedule containing an arbitrary number of pulse entries
     and/or sub-schedules.

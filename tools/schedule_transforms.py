@@ -75,8 +75,7 @@ def flatten_sub_sched(child_dicts,
    [
         {'type': 'schedule',
         'sched_delay_dur': (float),
-        'nums_pulses': (iterable of int),
-        'ph_dwell_times': (iterable of float),
+        'pulse_history': (iterable of (int, float)),
         'children': [{...}]
         },
 

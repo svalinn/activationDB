@@ -35,14 +35,14 @@ def test_compress_pulse_history(pulse_length, num_pulses, exp_tirr):
 
     assert obs_tirr == exp_tirr
 
-@pytest.mark.parametrize( "pulse_length,nums_pulses,dwell_times,exp_tot_tirr,exp_tot_ff",
+@pytest.mark.parametrize( "pulse_length,pulse_history,,exp_tot_tirr,exp_tot_ff",
                           [
-                            (1, [1,1], [1,1], 1, 1),
-                            (1, [2,2], [1,2], 8, 4/8),
-                            (2, [1,2], [2,2], 6, 4/6)
+                            (1, [(1,1), (1,1)], 1, 1),
+                            (1, [(2,1), (2,2)], 8, 4/8),
+                            (2, [(1,2), (2,2)], 6, 4/6)
                           ])
-def test_flatten_ph_levels(pulse_length, nums_pulses, dwell_times, exp_tot_tirr, exp_tot_ff):
-    obs_tot_tirr, obs_tot_ff = st.flatten_ph_levels(pulse_length, nums_pulses, dwell_times)
+def test_flatten_ph_levels(pulse_length, pulse_history, exp_tot_tirr, exp_tot_ff):
+    obs_tot_tirr, obs_tot_ff = st.flatten_ph_levels(pulse_length, pulse_history)
 
     assert obs_tot_tirr == exp_tot_tirr
     assert obs_tot_ff == exp_tot_ff
@@ -58,126 +58,113 @@ def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_tirr):
 
     assert obs_tot_tirr == exp_tot_tirr
 
-@pytest.mark.parametrize( "child_dicts, sched_delay_dur, sched_np, sched_ph_dt, exp_tirr, exp_ff",
+@pytest.mark.parametrize( "child_dicts, pulse_history, sched_delay_dur, exp_tirr, exp_ff",
                           [
-                            ({'children':
-                              [{
+                            ([
+                                {
                                 'type': 'schedule',
+                                'pulse_history':[(1,1)],
                                 'sched_delay_dur': 1,
-                                'nums_pulses': [1],
-                                'ph_dwell_times':[1],
                                 'children':
                                     [
                                     {'type': 'pulse_entry',
                                     'pulse_length': 1,
-                                    'pe_delay_dur' : 1,
-                                    'nums_pulses': [1],
-                                    'ph_dwell_times': [1]},
+                                    'pulse_history':[(1,1)],
+                                    'pe_delay_dur' : 1
+                                    },
 
                                     {'type': 'pulse_entry',
                                     'pulse_length': 1,
-                                    'pe_delay_dur' : 1,
-                                    'nums_pulses': [1],
-                                    'ph_dwell_times': [1]}
-                                    ]},
-                               ]
-                               },
+                                    'pulse_history':[(1,1)],
+                                    'pe_delay_dur' : 1
+                                    }
+                                    ]
+                               }
+                            ],
 
+                               [(1,0)],
                                0,
-                               [1],
-                               [0],
                                5,
                                2/5),
 
-                            ({'children':
-                              [
+                            ([
                                 {
                                 'type': 'schedule',
+                                'pulse_history':[(1,1)],
                                 'sched_delay_dur': 5,
-                                'nums_pulses': [1],
-                                'ph_dwell_times':[1],
                                 'children':
                                     [
                                     {'type': 'pulse_entry',
                                     'pulse_length': 10,
-                                    'pe_delay_dur' : 20,
-                                    'nums_pulses': [1],
-                                    'ph_dwell_times': [1]},
+                                    'pulse_history':[(1,1)],
+                                    'pe_delay_dur' : 20
+                                    },
 
                                     {'type': 'pulse_entry',
                                     'pulse_length': 2,
-                                    'pe_delay_dur' : 10,
-                                    'nums_pulses': [1],
-                                    'ph_dwell_times': [1]},
+                                    'pulse_history':[(1,1)],
+                                    'pe_delay_dur' : 10
+                                    },
 
                                     {'type': 'schedule',
+                                    'pulse_history':[(1,1)],
                                     'sched_delay_dur': 2,
-                                    'nums_pulses': [1],
-                                    'ph_dwell_times': [1],
                                     'children':
                                         [
                                         {'type': 'pulse_entry',
                                         'pulse_length': 5,
-                                        'pe_delay_dur' : 10,
-                                        'nums_pulses': [1],
-                                        'ph_dwell_times': [1]
+                                        'pulse_history':[(1,1)],
+                                        'pe_delay_dur' : 10
                                         }
                                         ]
                                     },
                                     {'type': 'schedule',
+                                    'pulse_history':[(1,1)],
                                     'sched_delay_dur': 2,
-                                    'nums_pulses': [1],
-                                    'ph_dwell_times': [1],
                                     'children':
                                         [
                                         {'type': 'pulse_entry',
                                         'pulse_length': 5,
-                                        'pe_delay_dur' : 3,
-                                        'nums_pulses': [1],
-                                        'ph_dwell_times': [1]
+                                        'pulse_history':[(1,1)],
+                                        'pe_delay_dur' : 3
                                         }
                                         ]
                                     }
 
                                     ]
-                                },
-                               ]
-                               },
+                                }
+                               ],
 
+                               [(1,0)],
                                0,
-                               [1],
-                               [0],
                                74,
                                22/74),
 
-                            ({'children':
-                              [{
+                            ([
+                                {
                                 'type': 'schedule',
                                 'sched_delay_dur': 1,
-                                'nums_pulses': [2],
-                                'ph_dwell_times':[0],
+                                'pulse_history': [(2,0)],
                                 'children':
                                     [
                                     {'type': 'pulse_entry',
                                     'pulse_length': 1,
-                                    'pe_delay_dur' : 1,
-                                    'nums_pulses': [2],
-                                    'ph_dwell_times': [0]}
-                                    ]},
-                               ]
-                               },
+                                    'pulse_history': [(2,0)],
+                                    'pe_delay_dur' : 1
+                                    }
+                                    ]
+                                },
+                               ],
 
+                               [(1,0)],
                                0,
-                               [1],
-                               [0],
                                7,
                                4/7),
 
                           ])
-def test_flatten_sub_sched(child_dicts, sched_delay_dur, sched_np, sched_ph_dt,
+def test_flatten_sub_sched(child_dicts, pulse_history, sched_delay_dur,
                            exp_tirr, exp_ff):
-    obs_tirr, obs_ff = st.flatten_sub_sched(child_dicts, sched_delay_dur,
-                                            sched_np, sched_ph_dt)
+    obs_tirr, obs_ff = st.flatten_sub_sched(child_dicts, pulse_history, sched_delay_dur)
 
     assert obs_tirr == exp_tirr
     assert obs_ff == exp_ff

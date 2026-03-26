@@ -48,44 +48,43 @@ def flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time,
     t_irr_flat_exact_pulses, ff_flat_exact_pulses = flatten_pulse_history(pulse_length, num_init_pulses, dwell_time)
     return t_irr_flat_exact_pulses, ff_flat_exact_pulses
 
-def flatten_ph_levels(pulse_length, nums_pulses, dwell_times):
+
+def flatten_ph_levels(pulse_length, pulse_history):
     '''
     Apply the flattening algorithm to all levels of a multi-level pulsing history
     with a single-level schedule block.  
     
-    :param pulse_lengths: active irradiation time from schedule block
-    :param nums_pulses: (iterable) number of pulses at each level
-    :param dwell_times: (iterable) the duration of the gap between each pulse at each level
+    :param pulse_length: active irradiation time from schedule block
+    :param pulse_history : (iterable of (int, float))
     '''
     tot_ff_flat = 1
     tot_t_irr_flat = pulse_length
-    for num_pulses, dwell_time in zip(nums_pulses, dwell_times):
-        tot_t_irr_flat, ff = flatten_pulse_history(tot_t_irr_flat, num_pulses, dwell_time)
+    for pulse_history_level in pulse_history:
+        tot_t_irr_flat, ff = flatten_pulse_history(tot_t_irr_flat,
+                                                   pulse_history_level[0],
+                                                   pulse_history_level[1])
         tot_ff_flat *= ff
     return tot_t_irr_flat, tot_ff_flat
 
-def flatten_sub_sched(child_dicts,
-                      pulse_history=[(1,0)],
-                      delay=0):
+
+def flatten_sub_sched(child_dicts, pulse_history=[(1, 0)], sched_delay_dur=0):
     '''
     Calculate irradiation time and flux factor for a schedule containing an arbitrary number of pulse entries
     and/or sub-schedules.
     :param child_dicts: iterable of dictionaries, with the form:
-   [
-        {'type': 'schedule',
-        'sched_delay_dur': (float),
-        'pulse_history': (iterable of (int, float)),
-        'children': [{...}]
-        },
+    [
+    {'type': 'schedule',
+    'pulse_history': (iterable of (int, float)),
+    'sched_delay_dur': (float),
+    'children': [{...}]
+    },
 
-        {'type': 'pulse_entry',
-        'pulse_length': (float),
-        'pe_delay_dur' : (float),
-        'nums_pulses': (iterable of int),
-        'ph_dwell_times': (iterable of float)
-        }
-    ]
+    {'type': 'pulse_entry',
+    'pulse_length': (float),
+    'pulse_history': (iterable of (int, float)),
+    'pe_delay_dur' : (float)
     }
+    ]
     It is possible for the value of the 'children' key at any level to consist entirely of pulse entries.
     '''
     t_irr = 0
@@ -94,25 +93,27 @@ def flatten_sub_sched(child_dicts,
         if child_dict['type'] == 'schedule':
             child_tirr, child_ff = flatten_sub_sched(
                 child_dict['children'],
-                sched_delay_dur=child_dict['sched_delay_dur'],
-                sched_np=child_dict['nums_pulses'],
-                sched_ph_dt=child_dict['ph_dwell_times'])
+                pulse_history=child_dict['pulse_history'],
+                sched_delay_dur=child_dict['sched_delay_dur'])
             t_irr += child_tirr + child_dict['sched_delay_dur']
             active_burn_time += child_tirr * child_ff
 
         if child_dict['type'] == 'pulse_entry':
             pe_tirr, pe_ff = flatten_ph_levels(child_dict['pulse_length'],
-                                               child_dict['nums_pulses'],
-                                               child_dict['ph_dwell_times'])
+                                               child_dict['pulse_history'])
             active_burn_time += pe_tirr * pe_ff
             t_irr += pe_tirr + child_dict['pe_delay_dur']
-            
-    active_burn_time = flatten_ph_levels(active_burn_time, sched_np, [0]*len(sched_ph_dt))[0]
-    t_irr = flatten_ph_levels(t_irr, sched_np, sched_ph_dt)[0]
-    
+
+    active_burn_time = flatten_ph_levels(
+        active_burn_time,
+        [(num_pulses, 0) for num_pulses, ph_dwell_time in pulse_history])[0]
+
+    t_irr = flatten_ph_levels(t_irr, pulse_history)[0]
+
     ff = active_burn_time / t_irr
 
     return t_irr, ff
+
 
 def compress_ph_levels(pulse_length, nums_pulses):
     '''

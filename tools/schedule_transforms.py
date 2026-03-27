@@ -94,15 +94,11 @@ def flatten_sub_sched(child_dicts, pulse_history=[(1, 0)]):
             child_tirr, child_ff = flatten_sub_sched(
                 child_dict['children'],
                 pulse_history=child_dict['pulse_history'])
-            t_irr += child_tirr + child_dict['delay_dur']
-            active_burn_time += child_tirr * child_ff
-
         if child_dict['type'] == 'pulse_entry':
-            pe_tirr, pe_ff = flatten_ph_levels(child_dict['pulse_length'],
+            child_tirr, child_ff = flatten_ph_levels(child_dict['pulse_length'],
                                                child_dict['pulse_history'])
-            active_burn_time += pe_tirr * pe_ff
-            t_irr += pe_tirr + child_dict['delay_dur']
-
+        active_burn_time += child_tirr * child_ff
+        t_irr += child_tirr + child_dict['delay_dur']
     active_burn_time = flatten_ph_levels(
         active_burn_time,
         [(num_pulses, 0) for num_pulses, ph_dwell_time in pulse_history])[0]

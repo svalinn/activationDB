@@ -91,7 +91,7 @@ def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
     active_burn_time = 0
     for child_dict in child_dicts:
         if child_dict['type'] == 'schedule':
-            child_tirr, child_ff = flatten_sub_sched(
+            child_tirr, child_ff = flatten_schedule(
                 child_dict['children'],
                 child_dict['pulse_history'])
         if child_dict['type'] == 'pulse_entry':

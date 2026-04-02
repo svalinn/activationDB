@@ -192,9 +192,9 @@ def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_tirr):
                                8/9),
 
                           ])
-def test_flatten_sub_sched(child_dicts, pulse_history,
+def test_flatten_schedule(child_dicts, pulse_history,
                            exp_tirr, exp_ff):
-    obs_tirr, obs_ff = st.flatten_sub_sched(child_dicts, pulse_history)
+    obs_tirr, obs_ff = st.flatten_schedule(child_dicts, pulse_history)
 
     assert obs_tirr == pytest.approx(exp_tirr)
     assert obs_ff == pytest.approx(exp_ff)

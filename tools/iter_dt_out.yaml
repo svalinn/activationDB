@@ -12,4 +12,32 @@ num_pulses :
   - 8
   - 32
   - 64  
-flux_file : /filespace/a/asrajendra/research/activationDB/ref_flux_files/iter_dt_flux_2.0986E14
+flux_file : ../calc_dwell_dir/ref_flux_files/iter_dt_flux_2.0986E14
+run_dicts :
+    iter_dt_100_4y :
+        iter_dt_2p_100_4y : ../calc_dwell_dir/iter/duty_cycle_100/output_100/iter_dt_2p_100_4y_out
+        iter_dt_4p_100_4y : ../calc_dwell_dir/iter/duty_cycle_100/output_100/iter_dt_4p_100_4y_out
+        iter_dt_8p_100_4y : ../calc_dwell_dir/iter/duty_cycle_100/output_100/iter_dt_8p_100_4y_out
+        iter_dt_32p_100_4y : ../calc_dwell_dir/iter/duty_cycle_100/output_100/iter_dt_32p_100_4y_out
+        iter_dt_64p_100_4y : ../calc_dwell_dir/iter/duty_cycle_100/output_100/iter_dt_64p_100_4y_out
+
+    iter_dt_90_4y :
+        iter_dt_2p_90_4y : ../calc_dwell_dir/iter/duty_cycle_90/output_90/iter_dt_2p_90_4y_out
+        iter_dt_4p_90_4y : ../calc_dwell_dir/iter/duty_cycle_90/output_90/iter_dt_4p_90_4y_out    
+        iter_dt_8p_90_4y : ../calc_dwell_dir/iter/duty_cycle_90/output_90/iter_dt_8p_90_4y_out
+        iter_dt_32p_90_4y : ../calc_dwell_dir/iter/duty_cycle_90/output_90/iter_dt_32p_90_4y_out
+        iter_dt_64p_90_4y : ../calc_dwell_dir/iter/duty_cycle_90/output_90/iter_dt_64p_90_4y_out
+
+    iter_dt_50_4y :
+        iter_dt_2p_50_4y : ../calc_dwell_dir/iter/duty_cycle_50/output_50/iter_dt_2p_50_4y_out
+        iter_dt_4p_50_4y : ../calc_dwell_dir/iter/duty_cycle_50/output_50/iter_dt_4p_50_4y_out
+        iter_dt_8p_50_4y : ../calc_dwell_dir/iter/duty_cycle_50/output_50/iter_dt_8p_50_4y_out  
+        iter_dt_32p_50_4y : ../calc_dwell_dir/iter/duty_cycle_50/output_50/iter_dt_32p_50_4y_out  
+        iter_dt_64p_50_4y : ../calc_dwell_dir/iter/duty_cycle_50/output_50/iter_dt_64p_50_4y_out
+
+    iter_dt_25_4y :
+        iter_dt_2p_25_4y : ../calc_dwell_dir/iter/duty_cycle_25/output_25/iter_dt_2p_25_4y_out
+        iter_dt_4p_25_4y : ../calc_dwell_dir/iter/duty_cycle_25/output_25/iter_dt_4p_25_4y_out    
+        iter_dt_8p_25_4y : ../calc_dwell_dir/iter/duty_cycle_25/output_25/iter_dt_8p_25_4y_out
+        iter_dt_32p_25_4y : ../calc_dwell_dir/iter/duty_cycle_25/output_25/iter_dt_32p_25_4y_out
+        iter_dt_64p_25_4y : ../calc_dwell_dir/iter/duty_cycle_25/output_25/iter_dt_64p_25_4y_out

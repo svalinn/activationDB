@@ -12,10 +12,10 @@ def flatten_pulse_history(pulse_length, num_pulses, dwell_time):
     :param num_pulses: (int) the number of pulses
     :param dwell_time: (float) the duration of the gap between each pulse
     """
-    t_irr_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
-    flux_factor_flat = num_pulses * pulse_length / t_irr_flat
+    duration_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
+    fluence_flat = num_pulses * pulse_length
 
-    return t_irr_flat, flux_factor_flat
+    return duration_flat, fluence_flat
 
 def compress_pulse_history(pulse_length, num_pulses):
     '''
@@ -26,9 +26,9 @@ def compress_pulse_history(pulse_length, num_pulses):
     :param pulse_length: (float) the duration of each pulse
     :param num_pulses: (int) the number of pulses
     '''
-    t_irr_comp = num_pulses * pulse_length
+    sched_children_dur_comp = num_pulses * pulse_length
 
-    return t_irr_comp
+    return sched_children_dur_comp
 
 
 def flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time,
@@ -45,8 +45,8 @@ def flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time,
     :param num_final_pulses: (int) the number of final pulses
     '''
     num_init_pulses = num_tot_pulses - num_final_pulses
-    t_irr_flat_exact_pulses, ff_flat_exact_pulses = flatten_pulse_history(pulse_length, num_init_pulses, dwell_time)
-    return t_irr_flat_exact_pulses, ff_flat_exact_pulses
+    sched_children_dur_flat_exact_pulses, fluence_flat_exact_pulses = flatten_pulse_history(pulse_length, num_init_pulses, dwell_time)
+    return sched_children_dur_flat_exact_pulses, fluence_flat_exact_pulses
 
 
 def flatten_ph_levels(pulse_length, pulse_history):
@@ -58,13 +58,14 @@ def flatten_ph_levels(pulse_length, pulse_history):
     :param pulse_history : (iterable of (int, float))
     '''
     tot_ff_flat = 1
-    tot_t_irr_flat = pulse_length
+    tot_dur_flat = pulse_length
     for num_pulses, dwell_time in pulse_history:
-        tot_t_irr_flat, ff = flatten_pulse_history(tot_t_irr_flat,
+        tot_dur_flat, fluence_flat = flatten_pulse_history(tot_dur_flat,
                                                    num_pulses,
                                                    dwell_time)
-        tot_ff_flat *= ff
-    return tot_t_irr_flat, tot_ff_flat
+        tot_ff_flat *= fluence_flat / tot_dur_flat
+    tot_fluence_flat = tot_dur_flat * tot_ff_flat   
+    return tot_dur_flat, tot_fluence_flat
 
 
 def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
@@ -87,28 +88,27 @@ def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
     ]
     It is possible for the value of the 'children' key at any level to consist entirely of pulse entries.
     '''
-    t_irr = 0
-    active_burn_time = 0
+    sched_children_dur = 0
+    tot_fluence = 0
     for child_dict in child_dicts:
         if child_dict['type'] == 'schedule':
-            child_tirr, child_ff = flatten_schedule(
+            child_dur, child_fluence = flatten_schedule(
                 child_dict['children'],
                 child_dict['pulse_history'])
         if child_dict['type'] == 'pulse_entry':
-            child_tirr, child_ff = flatten_ph_levels(child_dict['pulse_length'],
+            child_dur, child_fluence = flatten_ph_levels(child_dict['pulse_length'],
                                                child_dict['pulse_history'])
-        active_burn_time += child_tirr * child_ff
-        t_irr += child_tirr + child_dict['delay_dur']
-    t_irr -= child_dicts[-1]['delay_dur'] 
-    ff = active_burn_time / t_irr
+        tot_fluence += child_fluence
+        sched_children_dur += child_dur + child_dict['delay_dur']
+    sched_children_dur -= child_dicts[-1]['delay_dur']
 
-    t_irr, new_ff = flatten_ph_levels(
-        t_irr,
+    sched_dur, new_fluence = flatten_ph_levels(
+        sched_children_dur,
         pulse_history)
 
-    ff *= new_ff    
+    tot_fluence *= new_fluence / sched_children_dur
 
-    return t_irr, ff
+    return sched_dur, tot_fluence
 
 
 def compress_ph_levels(pulse_length, nums_pulses):
@@ -119,7 +119,7 @@ def compress_ph_levels(pulse_length, nums_pulses):
     :param pulse_lengths: active irradiation time from schedule block
     :param nums_pulses: (iterable) number of pulses at each level
     '''
-    tot_t_irr_comp = pulse_length
+    tot_sched_children_dur_comp = pulse_length
     for num_pulses in nums_pulses:
-        tot_t_irr_comp = compress_pulse_history(tot_t_irr_comp, num_pulses)
-    return tot_t_irr_comp
+        tot_sched_children_dur_comp = compress_pulse_history(tot_sched_children_dur_comp, num_pulses)
+    return tot_sched_children_dur_comp

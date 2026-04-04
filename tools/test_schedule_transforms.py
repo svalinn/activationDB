@@ -1,84 +1,200 @@
 import pytest
 import schedule_transforms as st
 
-@pytest.mark.parametrize( "pulse_length,num_pulses,dwell_time,exp_tirr,exp_ff",
+@pytest.mark.parametrize( "pulse_length,num_pulses,dwell_time,exp_dur,exp_fluence",
                           [
                             (1, 1, 1, 1, 1),
-                            (1, 2, 1, 3, 2/3),
-                            (2, 4, 6, 26, 8/26)                              
+                            (1, 2, 1, 3, 2),
+                            (2, 4, 6, 26, 8)
                           ])
-def test_single_pulse_history(pulse_length, num_pulses, dwell_time, exp_tirr, exp_ff):
-    obs_tirr, obs_ff = st.flatten_pulse_history(pulse_length, num_pulses, dwell_time)
+def test_single_pulse_history(pulse_length, num_pulses, dwell_time, exp_dur, exp_fluence):
+    obs_dur, obs_fluence = st.flatten_pulse_history(pulse_length, num_pulses, dwell_time)
 
-    assert obs_tirr == exp_tirr
-    assert obs_ff == exp_ff
+    assert obs_dur == exp_dur
+    assert obs_fluence == exp_fluence
 
-@pytest.mark.parametrize( "pulse_length,num_tot_pulses,dwell_time,num_final_pulses,exp_tirr,exp_ff",
+@pytest.mark.parametrize( "pulse_length,num_tot_pulses,dwell_time,num_final_pulses,exp_dur,exp_fluence",
                           [
-                            (1, 5, 2, 1, 10, 4/10),
-                            (5, 5, 1, 1, 23, 20/23),
-                            (5, 5, 1, 3, 11, 10/11)                              
+                            (1, 5, 2, 1, 10, 4),
+                            (5, 5, 1, 1, 23, 20),
+                            (5, 5, 1, 3, 11, 10)
                           ])
-def test_flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time, num_final_pulses, exp_tirr, exp_ff):
-    obs_tirr, obs_ff = st.flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time, num_final_pulses)
+def test_flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time, num_final_pulses, exp_dur, exp_fluence):
+    obs_dur, obs_fluence = st.flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time, num_final_pulses)
 
-    assert obs_tirr == exp_tirr
-    assert obs_ff == exp_ff
-@pytest.mark.parametrize( "pulse_length,num_pulses,exp_tirr",
+    assert obs_dur == exp_dur
+    assert obs_fluence == exp_fluence
+@pytest.mark.parametrize( "pulse_length,num_pulses,exp_dur",
                           [
                             (1, 1, 1),
                             (1, 2, 2),
-                            (10, 5, 50)                              
+                            (10, 5, 50)
                           ])
-def test_compress_pulse_history(pulse_length, num_pulses, exp_tirr):
-    obs_tirr = st.compress_pulse_history(pulse_length, num_pulses)
+def test_compress_pulse_history(pulse_length, num_pulses, exp_dur):
+    obs_dur = st.compress_pulse_history(pulse_length, num_pulses)
 
-    assert obs_tirr == exp_tirr
+    assert obs_dur == exp_dur
 
-@pytest.mark.parametrize( "pulse_length,nums_pulses,dwell_times,exp_tot_tirr,exp_tot_ff",
+@pytest.mark.parametrize( "pulse_length,pulse_history,exp_tot_dur,exp_tot_fluence",
                           [
-                            (1, [1,1], [1,1], 1, 1),
-                            (1, [2,2], [1,2], 8, 4/8),
-                            (2, [1,2], [2,2], 6, 4/6)                              
+                            (1, [(1,1), (1,1)], 1, 1),
+                            (1, [(2,1), (2,2)], 8, 4),
+                            (2, [(1,2), (2,2)], 6, 4)
                           ])
-def test_flatten_ph_levels(pulse_length, nums_pulses, dwell_times, exp_tot_tirr, exp_tot_ff):
-    obs_tot_tirr, obs_tot_ff = st.flatten_ph_levels(pulse_length, nums_pulses, dwell_times)
+def test_flatten_ph_levels(pulse_length, pulse_history, exp_tot_dur, exp_tot_fluence):
+    obs_tot_dur, obs_tot_fluence = st.flatten_ph_levels(pulse_length, pulse_history)
 
-    assert obs_tot_tirr == exp_tot_tirr
-    assert obs_tot_ff == exp_tot_ff
+    assert obs_tot_dur == exp_tot_dur
+    assert obs_tot_fluence == exp_tot_fluence
 
-@pytest.mark.parametrize( "pulse_length,nums_pulses,exp_tot_tirr",
+@pytest.mark.parametrize( "pulse_length,nums_pulses,exp_tot_dur",
                           [
                             (1, [1,1], 1),
                             (1, [2,2], 4),
-                            (2, [5,7], 70)                              
+                            (2, [5,7], 70)
                           ])
-def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_tirr):
-    obs_tot_tirr = st.compress_ph_levels(pulse_length, nums_pulses)
+def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_dur):
+    obs_tot_dur = st.compress_ph_levels(pulse_length, nums_pulses)
 
-    assert obs_tot_tirr == exp_tot_tirr
+    assert obs_tot_dur == exp_tot_dur
 
-
-@pytest.mark.parametrize( "pulse_lengths,sched_dwell_times, nums_pulses,ph_dwell_times,exp_tot_sched_tirr,exp_tot_ff",
+@pytest.mark.parametrize( "child_dicts, pulse_history, exp_dur, exp_fluence",
                           [
-                            ([1], [1], [1,1], [1,1], 1, 1),
-                            ([1,2], [2,2], [2,2], [1,2], 22, 12/22),
-                            ([5,3], [3,4], [2,3], [1,1], 61, 48/61)
-                          ])
-def test_flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times, exp_tot_sched_tirr,exp_tot_ff):
-    obs_tot_sched_tirr, obs_tot_ff = st.flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
-    
-    assert obs_tot_sched_tirr == exp_tot_sched_tirr
-    assert obs_tot_ff == exp_tot_ff
+                            ([
+                                {
+                                'type': 'schedule',
+                                'pulse_history':[(1,1)],
+                                'delay_dur': 1,
+                                'children':
+                                    [
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 1,
+                                    'pulse_history':[(1,1)],
+                                    'delay_dur' : 1
+                                    },
 
-@pytest.mark.parametrize( "all_pulse_lengths,all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times,exp_all_sched_tirr,exp_tot_ff",
-                          [
-                            ([[1]], [[1]], [[1,1]], [[1,1]], 1, 1),
-                            ([[1,2], [5,3]], [[2,2], [3,4]], [[2,2], [2,3]], [[1,2], [1,1]], 83, 60/83),
-                            ([[1,2], [2,2]], [[2,2], [2,2]], [[2,2], [2,2]], [[1,2], [2,2]], 52, 28/52)
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 1,
+                                    'pulse_history':[(1,1)],
+                                    'delay_dur' : 1
+                                    }
+                                    ]
+                               }
+                            ],
+
+                               [(1,0)],
+                               3,
+                               2),
+
+                            ([
+                                {
+                                'type': 'schedule',
+                                'pulse_history':[(1,1)],
+                                'delay_dur': 5,
+                                'children':
+                                    [
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 10,
+                                    'pulse_history':[(1,1)],
+                                    'delay_dur' : 20
+                                    },
+
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 2,
+                                    'pulse_history':[(1,1)],
+                                    'delay_dur' : 10
+                                    },
+
+                                    {'type': 'schedule',
+                                    'pulse_history':[(1,1)],
+                                    'delay_dur': 2,
+                                    'children':
+                                        [
+                                        {'type': 'pulse_entry',
+                                        'pulse_length': 5,
+                                        'pulse_history':[(1,1)],
+                                        'delay_dur' : 10
+                                        }
+                                        ]
+                                    },
+                                    {'type': 'schedule',
+                                    'pulse_history':[(1,1)],
+                                    'delay_dur': 2,
+                                    'children':
+                                        [
+                                        {'type': 'pulse_entry',
+                                        'pulse_length': 5,
+                                        'pulse_history':[(1,1)],
+                                        'delay_dur' : 3
+                                        }
+                                        ]
+                                    }
+
+                                    ]
+                                }
+                               ],
+
+                               [(1,0)],
+                               54,
+                               22),
+
+                            ([
+                                {
+                                'type': 'schedule',
+                                'delay_dur': 1,
+                                'pulse_history': [(2,0)],
+                                'children':
+                                    [
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 1,
+                                    'pulse_history': [(2,0)],
+                                    'delay_dur' : 1
+                                    }
+                                    ]
+                                },
+                               ],
+
+                               [(1,0)],
+                               4,
+                               4),
+
+                            ([
+                                {
+                                'type': 'schedule',
+                                'delay_dur': 1,
+                                'pulse_history': [(2,0)],
+                                'children':
+                                    [
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 1,
+                                    'pulse_history': [(2,0)],
+                                    'delay_dur' : 1
+                                    }
+                                    ],
+                                },
+                                {   
+                                'type': 'schedule',
+                                'delay_dur': 1,
+                                'pulse_history': [(2,0)],
+                                'children':
+                                    [
+                                    {'type': 'pulse_entry',
+                                    'pulse_length': 1,
+                                    'pulse_history': [(2,0)],
+                                    'delay_dur' : 1
+                                    }
+                                    ],
+                                },
+                               ],
+
+                               [(1,0)],
+                               9,
+                               8),
+
                           ])
-def test_flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times, exp_all_sched_tirr,exp_tot_ff):
-    obs_all_sched_tirr, obs_tot_ff = st.flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times)
-    
-    assert obs_all_sched_tirr == exp_all_sched_tirr
-    assert obs_tot_ff == exp_tot_ff   
+def test_flatten_schedule(child_dicts, pulse_history,
+                           exp_dur, exp_fluence):
+    obs_dur, obs_fluence = st.flatten_schedule(child_dicts, pulse_history)
+
+    assert obs_dur == pytest.approx(exp_dur)
+    assert obs_fluence == pytest.approx(exp_fluence)

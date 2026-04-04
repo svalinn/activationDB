@@ -12,10 +12,10 @@ def flatten_pulse_history(pulse_length, num_pulses, dwell_time):
     :param num_pulses: (int) the number of pulses
     :param dwell_time: (float) the duration of the gap between each pulse
     """
-    t_irr_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
-    flux_factor_flat = num_pulses * pulse_length / t_irr_flat
+    duration_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
+    fluence_flat = num_pulses * pulse_length
 
-    return t_irr_flat, flux_factor_flat
+    return duration_flat, fluence_flat
 
 def compress_pulse_history(pulse_length, num_pulses):
     '''
@@ -26,9 +26,9 @@ def compress_pulse_history(pulse_length, num_pulses):
     :param pulse_length: (float) the duration of each pulse
     :param num_pulses: (int) the number of pulses
     '''
-    t_irr_comp = num_pulses * pulse_length
+    sched_children_dur_comp = num_pulses * pulse_length
 
-    return t_irr_comp
+    return sched_children_dur_comp
 
 
 def flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time,
@@ -45,66 +45,70 @@ def flatten_ph_exact_pulses(pulse_length, num_tot_pulses, dwell_time,
     :param num_final_pulses: (int) the number of final pulses
     '''
     num_init_pulses = num_tot_pulses - num_final_pulses
-    t_irr_flat_exact_pulses, ff_flat_exact_pulses = flatten_pulse_history(pulse_length, num_init_pulses, dwell_time)
-    return t_irr_flat_exact_pulses, ff_flat_exact_pulses
+    sched_children_dur_flat_exact_pulses, fluence_flat_exact_pulses = flatten_pulse_history(pulse_length, num_init_pulses, dwell_time)
+    return sched_children_dur_flat_exact_pulses, fluence_flat_exact_pulses
 
 
-def flatten_ph_levels(pulse_length, nums_pulses, dwell_times):
+def flatten_ph_levels(pulse_length, pulse_history):
     '''
     Apply the flattening algorithm to all levels of a multi-level pulsing history
     with a single-level schedule block.  
     
-    :param pulse_lengths: active irradiation time from schedule block
-    :param nums_pulses: (iterable) number of pulses at each level
-    :param dwell_times: (iterable) the duration of the gap between each pulse at each level
+    :param pulse_length: active irradiation time from schedule block
+    :param pulse_history : (iterable of (int, float))
     '''
     tot_ff_flat = 1
-    tot_t_irr_flat = pulse_length
-    for num_pulses, dwell_time in zip(nums_pulses, dwell_times):
-        tot_t_irr_flat, ff = flatten_pulse_history(tot_t_irr_flat, num_pulses, dwell_time)
-        tot_ff_flat *= ff
-    return tot_t_irr_flat, tot_ff_flat
+    tot_dur_flat = pulse_length
+    for num_pulses, dwell_time in pulse_history:
+        tot_dur_flat, fluence_flat = flatten_pulse_history(tot_dur_flat,
+                                                   num_pulses,
+                                                   dwell_time)
+        tot_ff_flat *= fluence_flat / tot_dur_flat
+    tot_fluence_flat = tot_dur_flat * tot_ff_flat   
+    return tot_dur_flat, tot_fluence_flat
 
-def flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times):
-    '''
-    Calculate irradiation time and flux factor for a schedule that uses a single pulse history in all entries.
-    This method does not account for sub-schedules.
-    
-    :param pulse_lengths: (iterable) of pulse lengths from the schedule entries
-    :param sched_dwell_times: (iterable) of dwell times from the schedule entries
-    :param nums_pulses: (iterable) number of pulses at each pulsing level
-    :param ph_dwell_times: (iterable) the duration of the gap between each pulse at each pulsing level
-    '''
-    tot_active_burn_time = 0
-    tot_sched_t_irr = 0
-    for pulse_length, sched_dwell_time in zip(pulse_lengths, sched_dwell_times[:-1] + [0]): # ignore last schedule entry's dwell time
-        ph_t_irr, ph_ff = flatten_ph_levels(pulse_length, nums_pulses, ph_dwell_times)
-        tot_sched_t_irr += ph_t_irr + sched_dwell_time
-        tot_active_burn_time += ph_ff * ph_t_irr
-    tot_sched_ff = tot_active_burn_time / tot_sched_t_irr    
-    return tot_sched_t_irr, tot_sched_ff
 
-def flatten_mult_simple_scheds(all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times):
+def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
     '''
-    Calculate irradiation time and flux factor for a series of schedules that each use a single pulse history in all entries.
-    A different pulse history may be used in each schedule.
-    This method does not account for sub-schedules.
-    
-    :param all_pulse_lengths: (iterable of iterables) of pulse lengths in the schedule entries, for all schedules
-    :param all_sched_dwell_times: (iterable of iterables) of dwell times in the schedule entries, for all schedules
-    :param all_nums_pulses: (iterable of iterables) of number of pulses at each pulsing level, for all pulse histories
-    :param all_ph_dwell_times: (iterable of iterables) of the duration of the gap between each pulse at each pulsing level, 
-                                for all pulse histories
+    Calculate irradiation time and flux factor for a schedule containing an arbitrary number of pulse entries
+    and/or sub-schedules.
+    :param child_dicts: iterable of dictionaries, with the form:
+    [
+    {'type': 'schedule',
+     'children': [{...}]
+     'pulse_history': (iterable of (int, float)),
+     'delay_dur': (float),
+    },
+
+    {'type': 'pulse_entry',
+     'pulse_length': (float),
+     'pulse_history': (iterable of (int, float)),
+     'delay_dur' : (float)
+    }
+    ]
     '''
-    all_sched_t_irr = 0
-    all_sched_abt = 0
-    for pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times in zip(
-        all_pulse_lengths, all_sched_dwell_times, all_nums_pulses, all_ph_dwell_times):
-        sched_t_irr, sched_ff = flatten_simple_sched(pulse_lengths, sched_dwell_times, nums_pulses, ph_dwell_times)
-        all_sched_t_irr += sched_t_irr
-        all_sched_abt += sched_t_irr * sched_ff
-    tot_ff = all_sched_abt / all_sched_t_irr     
-    return all_sched_t_irr, tot_ff    
+    sched_children_dur = 0
+    tot_fluence = 0
+    for child_dict in child_dicts:
+        if child_dict['type'] == 'schedule':
+            child_dur, child_fluence = flatten_schedule(
+                child_dict['children'],
+                child_dict['pulse_history'])
+        if child_dict['type'] == 'pulse_entry':
+            child_dur, child_fluence = flatten_ph_levels(child_dict['pulse_length'],
+                                               child_dict['pulse_history'])
+        tot_fluence += child_fluence
+        sched_children_dur += child_dur + child_dict['delay_dur']
+    sched_children_dur -= child_dicts[-1]['delay_dur']
+
+    sched_dur, new_fluence = flatten_ph_levels(
+        sched_children_dur,
+        pulse_history)
+
+    tot_fluence *= new_fluence / sched_children_dur
+
+    return sched_dur, tot_fluence
+
 
 def compress_ph_levels(pulse_length, nums_pulses):
     '''
@@ -114,7 +118,7 @@ def compress_ph_levels(pulse_length, nums_pulses):
     :param pulse_lengths: active irradiation time from schedule block
     :param nums_pulses: (iterable) number of pulses at each level
     '''
-    tot_t_irr_comp = pulse_length
+    tot_sched_children_dur_comp = pulse_length
     for num_pulses in nums_pulses:
-        tot_t_irr_comp = compress_pulse_history(tot_t_irr_comp, num_pulses)
-    return tot_t_irr_comp
+        tot_sched_children_dur_comp = compress_pulse_history(tot_sched_children_dur_comp, num_pulses)
+    return tot_sched_children_dur_comp

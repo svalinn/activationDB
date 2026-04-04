@@ -86,7 +86,6 @@ def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
      'delay_dur' : (float)
     }
     ]
-    It is possible for the value of the 'children' key at any level to consist entirely of pulse entries.
     '''
     sched_children_dur = 0
     tot_fluence = 0

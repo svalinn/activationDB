@@ -70,7 +70,7 @@ def flatten_ph_levels(pulse_length, pulse_history):
 
 def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
     '''
-    Calculate irradiation time and flux factor for a schedule containing an arbitrary number of pulse entries
+    Calculate flattened irradiation time and fluence for a schedule containing an arbitrary number of pulse entries
     and/or sub-schedules.
     :param child_dicts: iterable of dictionaries, with the form:
     [
@@ -122,3 +122,37 @@ def compress_ph_levels(pulse_length, nums_pulses):
     for num_pulses in nums_pulses:
         tot_sched_children_dur_comp = compress_pulse_history(tot_sched_children_dur_comp, num_pulses)
     return tot_sched_children_dur_comp
+
+def compress_schedule(child_dicts, nums_pulses=[1]):
+    '''
+    Calculate compressed irradiation time for a schedule containing an arbitrary number of pulse entries
+    and/or sub-schedules.
+    :param child_dicts: iterable of dictionaries, with the form:
+    [
+    {'type': 'schedule',
+     'children': [{...}]
+     'nums_pulses': (iterable) number of pulses at each level
+    },
+
+    {'type': 'pulse_entry',
+     'pulse_length': (float),
+     'nums_pulses': (iterable) number of pulses at each level
+    }
+    ]
+    '''
+    sched_children_dur = 0
+    for child_dict in child_dicts:
+        if child_dict['type'] == 'schedule':
+            child_dur = compress_schedule(
+                child_dict['children'],
+                child_dict['nums_pulses'])
+        if child_dict['type'] == 'pulse_entry':
+            child_dur = compress_ph_levels(child_dict['pulse_length'],
+                                               child_dict['nums_pulses'])
+        sched_children_dur += child_dur
+
+    sched_dur = compress_ph_levels(
+        sched_children_dur,
+        nums_pulses)
+
+    return sched_dur

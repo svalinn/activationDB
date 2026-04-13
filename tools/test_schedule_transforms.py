@@ -59,7 +59,7 @@ def test_compress_ph_levels(pulse_length, nums_pulses, exp_tot_dur):
     assert obs_tot_dur == exp_tot_dur
 
 class Test_Flattened_Compressed:
-    common_args = ( "child_dicts, pulse_history, exp_fluence",
+    common_args = ("child_dicts, pulse_history, exp_fluence",
                           [
                             ([
                                 {
@@ -192,9 +192,8 @@ class Test_Flattened_Compressed:
     durations = [3, 54, 4, 9]
     @pytest.mark.parametrize("child_dicts, pulse_history, exp_fluence, exp_dur",
                              [
-                                 (*args, dur) for args, dur in zip(common_args[1], durations)
-                             ]
-                             )
+                                (*args, dur) for args, dur in zip(common_args[1], durations)
+                             ])
     def test_flatten_schedule(self, child_dicts, pulse_history,
                             exp_fluence, exp_dur):
         obs_dur, obs_fluence = st.flatten_schedule(child_dicts, pulse_history)

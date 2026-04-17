@@ -64,23 +64,14 @@ def read_yaml(yaml_arg):
     '''
     with open(yaml_arg, 'r') as yaml_file:
         inputs = yaml.safe_load(yaml_file)
-    return inputs
-
-def write_to_adf(run_dicts):
-    adf_data = []
-    for run_dict in run_dicts:
-        lib = aop.DataLibrary()
-        adf = lib.make_entries(run_dicts[run_dict])
-        adf_data.append(adf)
-        adf = pd.concat(adf_data)
-    return adf   
+    return inputs  
 
 def modify_adf(adf, norm_flux_arr, t_irr_arr, inputs):
     adf = adf.filter_rows(
         filter_dict=
         {
             "time": -1,
-             "variable" : adf.VARIABLE_ENUM["Number Density"]
+            "variable" : adf.VARIABLE_ENUM["Number Density"]
         }
     )
     #Remove some columns:
@@ -143,10 +134,7 @@ def main():
     # normalize flux spectrum by the total flux in each interval
     norm_flux_arr =  flux_array / total_flux.reshape(len(total_flux), 1) # 2D array of shape num_intervals x num_groups
 
-    run_dicts = inputs['run_dicts']
-    #run_dicts = inputs['iter_dt_100_4y']
-
-    adf = write_to_adf(run_dicts)
+    # Assume adf exists
     adf = modify_adf(adf, norm_flux_arr, t_irr_arr, inputs)
     write_to_sqlite(adf)
 

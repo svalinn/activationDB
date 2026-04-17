@@ -37,7 +37,7 @@ def parse_flux_lines(flux_lines):
     output : flux_array (numpy array of shape # intervals x number of energy groups)
     '''
     energy_bins = openmc.mgxs.GROUP_STRUCTURES['VITAMIN-J-175']
-    all_entries = np.array(' '.join(flux_lines).split(), dtype=float)
+    all_entries = np.array(flux_data.split(), dtype=float)
     if len(all_entries) == 0:
         raise Exception("The chosen flux file is empty.")
     num_groups = len(energy_bins) - 1
@@ -77,7 +77,7 @@ def modify_adf(adf, norm_flux_arr, t_irr_arr, inputs):
     #Rename some columns:
     adf.rename(columns={'value':'num_dens_(atoms/cm3)'}, inplace=True)
     block_names = adf['block_name'].unique()
-    flux_map = {block_name: flux_shape for block_name, flux_shape in zip(block_names, norm_flux_arr)}
+    flux_map = dict(zip(block_names, norm_flux_arr))
     # Normalized flux spectrum shape:
     adf['flux_spec_shape'] = adf['block_name'].map(flux_map)
 

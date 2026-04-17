@@ -25,7 +25,7 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
 
 def open_flux_file(flux_file):
     with open(flux_file, 'r') as flux_data:
-        flux_lines = flux_data.readlines()
+        flux_lines = flux_data.read()
     return flux_lines
 
 def parse_flux_lines(flux_lines):

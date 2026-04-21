@@ -1,3 +1,25 @@
+'''
+The following data structure (hereafter referred to as child_dicts) is
+an iterable of dictionaries, where each dictionary contains the details
+of a schedule entry or a pulse entry. In the case of a schedule entry,
+the value of the "children" key is a dictionary that follows the same format
+as its parent. The child_dicts structure and the values in each dictionary are
+used in the methods defined in this script to construct approximations of
+total duration and fluence.
+[
+{'type': 'schedule',
+    'children': [{...}]
+    'pulse_history': (iterable of (int, float)),
+    'delay_dur': (float),
+},
+
+{'type': 'pulse_entry',
+    'pulse_length': (float),
+    'pulse_history': (iterable of (int, float)),
+    'delay_dur' : (float)
+}
+]
+'''
 def flatten_pulse_history(pulse_length, num_pulses, dwell_time):
     """
     Apply the flux flattening approximation to a series of pulses.
@@ -72,20 +94,7 @@ def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
     '''
     Calculate flattened irradiation time and fluence for a schedule containing an arbitrary number of pulse entries
     and/or sub-schedules.
-    :param child_dicts: iterable of dictionaries, with the form:
-    [
-    {'type': 'schedule',
-     'children': [{...}]
-     'pulse_history': (iterable of (int, float)),
-     'delay_dur': (float),
-    },
-
-    {'type': 'pulse_entry',
-     'pulse_length': (float),
-     'pulse_history': (iterable of (int, float)),
-     'delay_dur' : (float)
-    }
-    ]
+    :param child_dicts: iterable of dictionaries
     '''
     sched_children_dur = 0
     tot_fluence = 0

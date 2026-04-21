@@ -136,20 +136,7 @@ def compress_schedule(child_dicts, pulse_history=[(1, 0)]):
     '''
     Calculate compressed irradiation time for a schedule containing an arbitrary number of pulse entries
     and/or sub-schedules.
-    :param child_dicts: iterable of dictionaries, with the form:
-    [
-    {'type': 'schedule',
-     'children': [{...}]
-     'pulse_history': (iterable of (int, float)),
-     'delay_dur': (float),
-    },
-
-    {'type': 'pulse_entry',
-     'pulse_length': (float),
-     'pulse_history': (iterable of (int, float)),
-     'delay_dur' : (float)
-    }
-    ]
+    :param child_dicts: iterable of dictionaries
     '''
     sched_children_dur = 0
     for child_dict in child_dicts:

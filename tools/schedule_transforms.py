@@ -20,7 +20,7 @@ total duration and fluence.
 }
 ]
 '''
-def flatten_pulse_history(pulse_length, num_pulses, dwell_time):
+def flatten_pulse_history(pulse_length, pulse_history):
     """
     Apply the flux flattening approximation to a series of pulses.
 
@@ -31,23 +31,25 @@ def flatten_pulse_history(pulse_length, num_pulses, dwell_time):
     the end of the last pulse, and the total fluence.
 
     :param pulse_length: (float) the duration of each pulse
-    :param num_pulses: (int) the number of pulses
-    :param dwell_time: (float) the duration of the gap between each pulse
+    :param pulse_history : (int, float) of # pulses, dwell time
     """
+    num_pulses = pulse_history[0]
+    dwell_time = pulse_history[1]
     duration_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
     fluence_flat = num_pulses * pulse_length
 
     return duration_flat, fluence_flat
 
-def compress_pulse_history(pulse_length, num_pulses):
+def compress_pulse_history(pulse_length, pulse_history):
     '''
     Applies the compression algorithm to a series of pulses. This algorithm
     preserves the total active irradiation time between the start of the first
     and end of the last pulse, and the total fluence.
     
     :param pulse_length: (float) the duration of each pulse
-    :param num_pulses: (int) the number of pulses
+    :param pulse_history : (int, float) of # pulses, dwell time
     '''
+    num_pulses = pulse_history[0]
     sched_children_dur_comp = num_pulses * pulse_length
 
     return sched_children_dur_comp
@@ -119,16 +121,16 @@ def flatten_schedule(child_dicts, pulse_history=[(1, 0)]):
     return sched_dur, tot_fluence
 
 
-def compress_ph_levels(pulse_length, nums_pulses):
+def compress_ph_levels(pulse_length, pulse_history):
     '''
     Apply the compression algorithm to all levels of a multi-level pulsing history
     with a single-level schedule block.  
     
     :param pulse_lengths: active irradiation time from schedule block
-    :param nums_pulses: (iterable) number of pulses at each level
+    :param pulse_history : (iterable of (int, float))
     '''
     tot_sched_children_dur_comp = pulse_length
-    for num_pulses in nums_pulses:
+    for num_pulses, _ in pulse_history:
         tot_sched_children_dur_comp = compress_pulse_history(tot_sched_children_dur_comp, num_pulses)
     return tot_sched_children_dur_comp
 

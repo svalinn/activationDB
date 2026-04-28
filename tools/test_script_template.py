@@ -7,6 +7,11 @@ import script_template as script_temp
 import schedule_transforms as st
 import sqlite3
 
+'''
+Runs and tests the methods in script_template.py using a series of run dictionaries
+with various pulse numbers and duty cycles.
+'''
+
 
 def write_to_adf(run_dicts):
     adf_data = []
@@ -19,6 +24,9 @@ def write_to_adf(run_dicts):
 
 
 def test_modify_adf_columns(adf):
+    '''
+    Ensure that the expected columns exist in the adf.
+    '''
     assert not any(col in adf for col in [
         "value",
         "time",
@@ -33,6 +41,11 @@ def test_modify_adf_columns(adf):
 
 
 def adf_map_flux_tirr(adf, norm_flux_arr, t_irr_arr, num_pulses, duty_cycles):
+    '''
+    Maps each of the number of pulses and duty cycle values from the run label to an iterator,
+    from which the corresponding value of the irradiation time is identified. The irradiation
+    time is added to a new column in the adf.
+    '''
     pulse_num_dc = adf["run_lbl"].str.extract(r"_(\d+)p_(\d+)_").astype(int)
     # Map num_pulses and duty_cycles to an index
     pulse_idx = pulse_num_dc[0].map(
@@ -49,6 +62,9 @@ def adf_map_flux_tirr(adf, norm_flux_arr, t_irr_arr, num_pulses, duty_cycles):
 
 
 def test_adf_map_flux_tirr(adf):
+    '''
+    Ensure that two of the run labels are associated with the correct irradiation time.
+    '''
     assert not ((adf["run_lbl"] == "iter_dt_2p_100_4y")
                 & (adf["t_irr"] != 4 * 365 * 24 * 60 * 60)).any()
     assert not ((adf["run_lbl"] == "iter_dt_64p_25_4y")

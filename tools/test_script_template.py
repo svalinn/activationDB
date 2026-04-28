@@ -17,7 +17,7 @@ def write_to_adf(run_dicts):
         lib = aop.DataLibrary()
         adf = lib.make_entries(run_dicts[run_dict])
         adf_data.append(adf)
-        adf = pd.concat(adf_data)
+    adf = pd.concat(adf_data)  
     return adf
 
 

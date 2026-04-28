@@ -1,7 +1,8 @@
-import argparse
-import yaml
 import numpy as np
-import openmc
+import pandas as pd
+import alara_output_processing as aop
+import sqlite3
+
 
 def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     '''
@@ -18,63 +19,73 @@ def calc_time_params(active_burn_time, duty_cycle_list, num_pulses):
     rel_dwell_times = (1 - duty_cycle_list) / duty_cycle_list
     abs_dwell_times = np.outer(rel_dwell_times, pulse_lengths)
     t_irr_arr = active_burn_time + abs_dwell_times * (num_pulses - 1)
-    return pulse_lengths, abs_dwell_times, t_irr_arr
+    return t_irr_arr
 
 def open_flux_file(flux_file):
     with open(flux_file, 'r') as flux_data:
-        flux_lines = flux_data.readlines()
-    return flux_lines
+        flux_str = flux_data.read()
+    all_flux_entries = np.array(flux_str.split(), dtype=float)
+    if len(all_flux_entries) == 0:
+        raise Exception("The chosen flux file is empty.")
+    return all_flux_entries
 
-def parse_flux_lines(flux_lines):
+
+def parse_flux_str(all_flux_entries, num_groups):
     '''
     Uses provided list of flux lines and group structure applied to the run to create an array of flux entries, with:
     # rows = # of intervals = total # flux entries / # group structure bins
     # columns = # group structure bins
-    input : flux_lines (list of lines from ALARA flux file)
-    output : flux_array (numpy array of shape # intervals x number of energy groups)
+    input : all_flux_entries (data (numpy array) from ALARA flux file)
+            num_groups : total number (int) of energy groups from group structure
+    output : flux_array (numpy array of shape # intervals x # energy groups)
     '''
-    energy_bins = openmc.mgxs.GROUP_STRUCTURES['VITAMIN-J-175']           
-    all_entries = np.array(' '.join(flux_lines).split(), dtype=float)
-    if len(all_entries) == 0:
-        raise Exception("The chosen flux file is empty.")
-    num_groups = len(energy_bins) - 1
-    num_intervals = len(all_entries) // num_groups
-    if len(all_entries) % num_groups != 0:
+    num_intervals = len(all_flux_entries) // num_groups
+    if len(all_flux_entries) % num_groups != 0:
         raise Exception("The number of intervals must be an integer.")
-    flux_array = all_entries.reshape(num_intervals, num_groups)
+    flux_array = all_flux_entries.reshape(num_intervals, num_groups)
     return flux_array
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--db_yaml', default = "iter_dt_out.yaml", help="Path (str) to YAML containing inputs")
-    args = parser.parse_args()
-    return args
 
-def read_yaml(yaml_arg):
-    '''
-    input:
-        yaml_arg : output of parse_args() corresponding to args.db_yaml
-    '''
-    with open(yaml_arg, 'r') as yaml_file:
-        inputs = yaml.safe_load(yaml_file)
-    return inputs
+def modify_adf_columns(adf):
+    adf = adf.filter_rows(filter_dict={
+        "time": -1,
+        "variable": adf.VARIABLE_ENUM["Number Density"]
+    })
+    #Remove some columns:
+    adf.drop(columns=[
+        'time', 'time_unit', 'variable', 'var_unit', 'block', 'block_num'
+    ],
+             inplace=True)
+    #Rename some columns:
+    adf.rename(columns={'value': 'num_dens_(atoms/cm3)'}, inplace=True)
 
-def main():        
-    args = parse_args()
-    inputs = read_yaml(args.db_yaml)
+    return adf
 
-    flux_file = inputs['flux_file'] 
-    flux_lines = open_flux_file(flux_file)
-    flux_array = parse_flux_lines(flux_lines)
+def map_adf_flux_tirr(adf, norm_flux_arr, t_irr_arr_mod):
 
-    active_burn_time = np.asarray(inputs['active_burn_time'])
-    duty_cycle_list = np.asarray(inputs['duty_cycles'])
-    num_pulses = np.asarray(inputs['num_pulses'])
-    pulse_lengths, abs_dwell_times, t_irr_arr = calc_time_params(active_burn_time, duty_cycle_list, num_pulses)
+    block_names = adf['block_name'].unique()
+    flux_map = dict(zip(block_names, norm_flux_arr))
 
-    total_flux = np.sum(flux_array, axis=1) # sum over the bin widths of flux array
-    # normalize flux spectrum by the total flux in each interval
-    norm_flux_arr =  flux_array / total_flux.reshape(len(total_flux), 1) # 2D array of shape num_intervals x num_groups
+    # Normalized flux spectrum shape:
+    adf['flux_spec_shape'] = adf['block_name'].map(flux_map)
+    adf['t_irr'] = t_irr_arr_mod
+    return adf
 
-if __name__ == "__main__":
-    main()
+
+def write_to_sqlite(adf):
+    sqlite_conn = sqlite3.connect('activation_results.db')
+    adf.to_sql('number_densities',
+               sqlite_conn,
+               if_exists='append',
+               method="multi")
+
+    try:
+        cursor = sqlite_conn.cursor()
+        sqlite_conn.commit()
+        result = cursor.fetchall()
+        cursor.close()
+
+        if sqlite_conn:
+            sqlite_conn.close()
+    except sqlite3.OperationalError as error:
+        print(error)

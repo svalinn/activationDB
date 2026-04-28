@@ -1,17 +1,9 @@
-def populate_table(cur, data_dict):
+def create_sqlite_table(cur):
     """
-    Create the sqlite table and populate it with data. The combination of input file and output file
+    Creates a sqlite table. The combination of input file and output file
     must be unique for each entry. If a different output file exists for the same input file,
     the associated git commit hash is necessarily different.
     :param cur: Cursor object for the SQLite connection
-    :param data_dict: dictionary containing information for the database, with structure:
-    {
-        "id": iterable of str/int,
-        "input_file": iterable of str,
-        "output_file": iterable of str,
-        "flux_file": iterable of str,
-        "git_hash": iterable of str,
-    }
     """
     cur.execute(
         """
@@ -25,6 +17,20 @@ def populate_table(cur, data_dict):
         )
     """
     )
+
+def populate_table(cur, data_dict):
+    """
+    Populate the sqlite table with data.
+    :param cur: Cursor object for the SQLite connection
+    :param data_dict: dictionary containing information for the database, with structure:
+    {
+        "id": iterable of str/int,
+        "input_file": iterable of str,
+        "output_file": iterable of str,
+        "flux_file": iterable of str,
+        "git_hash": iterable of str,
+    }
+    """
 
     cur.executemany(
         "INSERT INTO alara_simulations (id, input_file, output_file, flux_file, git_hash) VALUES (?, ?, ?, ?, ?)",

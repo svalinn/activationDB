@@ -63,14 +63,14 @@ def main():
     trunc_tolerance = inputs['trunc_tolerance']
     inp_file_folder = inputs['inp_file_folder']
 
-    sqlite_conn = sqlite3.connect(sqlite_conn_db_name) 
     training_inp_info = tiptd.make_flux_tirr_combos(rel_on_time_factors, flux_norm_factors, flux_files)
 
+    sqlite_conn = sqlite3.connect(sqlite_conn_db_name)
     filenames = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit)
+    sqlite_conn.close()
     all_training_dicts = make_all_dicts(training_inp_info, min_on_times, time_unit)
 
     make_all_input_files(all_training_dicts, nuclib, volume, trunc_tolerance, inp_file_folder, filenames)
 
 if __name__ == "__main__":
-    main()    
-
+    main()

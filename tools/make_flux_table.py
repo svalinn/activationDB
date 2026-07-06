@@ -7,9 +7,8 @@ def create_flux_table(cur):
     """
     cur.execute("""CREATE TABLE IF NOT EXISTS flux_spectra (
     flux_spec_shape_id INTEGER PRIMARY KEY,
-    flux_file TEXT,
-    flux_spectrum TEXT,                           
-    UNIQUE(flux_file, flux_spectrum)
+    flux_file TEXT UNIQUE,
+    flux_spectrum TEXT,
     )
     """
     )

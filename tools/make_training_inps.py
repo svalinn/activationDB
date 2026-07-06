@@ -8,22 +8,12 @@ import training_inp_params_to_dict as tiptd
 import build_inp_blocks as bib
 
 
-def make_all_dicts(training_inp_info, min_on_times, time_unit):
-    all_training_dicts = np.empty((len(min_on_times),) + training_inp_info.shape, dtype=object)
-    for (min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx) in np.ndindex(all_training_dicts.shape):
-        if training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx] is None:
-            all_training_dicts[min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx] = None
-        else:
-            training_dict = tiptd.write_training_params_dict(training_inp_info, min_on_times[min_on_time_idx], time_unit)
-            all_training_dicts[min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx] = training_dict
-    return all_training_dicts
-
-def make_all_input_files(all_training_dicts, nuclib, volume, trunc_tolerance, inp_file_folder, filenames):
+def make_all_input_files(all_training_dicts, flux_path_modifier, nuclib, volume, trunc_tolerance, inp_file_folder, filenames):
     for training_dict_idx in np.ndindex(all_training_dicts.shape):
         child_dict = all_training_dicts[training_dict_idx]
         ph_dict = bib.make_ph_dict([child_dict])
         flux_dict = bib.make_flux_dict([child_dict])
-        flux_lines = bib.make_flux_block(flux_dict)
+        flux_lines = bib.make_flux_block(flux_dict, flux_path_modifier)
         all_ph_lines = bib.make_pulse_history_block(ph_dict)
         all_sched_lines = bib.make_schedule_block([child_dict], ph_dict, flux_dict)
         nuclib_lines = bib.read_nuclib(nuclib)
@@ -62,15 +52,16 @@ def main():
     volume = inputs['volume']
     trunc_tolerance = inputs['trunc_tolerance']
     inp_file_folder = inputs['inp_file_folder']
+    flux_path_modifier = inputs['flux_path_modifier']
 
     training_inp_info = tiptd.make_flux_tirr_combos(rel_on_time_factors, flux_norm_factors, flux_files)
+    training_child_dicts = tiptd.write_training_params_dict(training_inp_info, min_on_times, time_unit)
 
     sqlite_conn = sqlite3.connect(sqlite_conn_db_name)
     filenames = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit)
     sqlite_conn.close()
-    all_training_dicts = make_all_dicts(training_inp_info, min_on_times, time_unit)
 
-    make_all_input_files(all_training_dicts, nuclib, volume, trunc_tolerance, inp_file_folder, filenames)
+    make_all_input_files(training_child_dicts, flux_path_modifier, nuclib, volume, trunc_tolerance, inp_file_folder, filenames)
 
 if __name__ == "__main__":
     main()

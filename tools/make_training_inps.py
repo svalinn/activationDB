@@ -3,7 +3,6 @@ import argparse
 import yaml
 import sqlite3
 import make_training_filenames as mtf
-import query_sqlite_db as qsd
 import training_inp_params_to_dict as tiptd
 import build_inp_blocks as bib
 

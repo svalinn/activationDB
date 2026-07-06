@@ -172,8 +172,3 @@ def make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines,
     assembled_lines = "geometry rectangular\n" + vol_lines + load_lines + mix_lines + data_output_lines \
                     + "\n" + flux_lines + all_sched_lines + "\n" + all_ph_lines + f"truncation {trunc_tolerance}"
     return assembled_lines
-
-
-def write_inp_file(assembled_lines, input_filename):
-    with open(input_filename, 'w') as new_inp:
-        new_inp.write(assembled_lines)

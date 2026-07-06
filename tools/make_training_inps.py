@@ -8,23 +8,29 @@ import training_inp_params_to_dict as tiptd
 import build_inp_blocks as bib
 
 
-def make_all_input_files(all_training_dicts, flux_path_modifier, nuclib, volume, trunc_tolerance, inp_file_folder, filenames):
-    for training_dict_idx in np.ndindex(all_training_dicts.shape):
-        child_dict = all_training_dicts[training_dict_idx]
-        ph_dict = bib.make_ph_dict([child_dict])
-        flux_dict = bib.make_flux_dict([child_dict])
-        flux_lines = bib.make_flux_block(flux_dict, flux_path_modifier)
-        all_ph_lines = bib.make_pulse_history_block(ph_dict)
-        all_sched_lines = bib.make_schedule_block([child_dict], ph_dict, flux_dict)
-        nuclib_lines = bib.read_nuclib(nuclib)
-        vol_lines, load_lines, mix_lines = bib.make_volume_block(nuclib_lines, volume)
-        assembled_lines = bib.make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines, all_sched_lines, trunc_tolerance)
-        with open(inp_file_folder+filenames[training_dict_idx], 'w') as new_inp:
-            new_inp.write(assembled_lines)    
+def make_all_input_files(training_child_dicts, flux_path_modifier, nuclib, volume, trunc_tolerance, inp_file_folder, filenames):
+    '''
+    :param: inp_file_folder (str, path to folder where the input files are written to)
+    '''
+    for training_dict_idx in np.ndindex(training_child_dicts.shape):
+        if training_child_dicts[training_dict_idx] == None:
+            continue
+        else:
+            child_dict = training_child_dicts[training_dict_idx]
+            ph_dict = bib.make_ph_dict(child_dicts=[child_dict])
+            flux_dict = bib.make_flux_dict(child_dicts=[child_dict])
+            flux_lines = bib.make_flux_block(flux_dict, flux_path_modifier)
+            all_ph_lines = bib.make_pulse_history_block(ph_dict)
+            all_sched_lines = bib.make_schedule_block(child_dicts=[child_dict], ph_dict=ph_dict, flux_dict=flux_dict)
+            nuclib_lines = bib.read_nuclib(nuclib)
+            vol_lines, load_lines, mix_lines = bib.make_volume_block(nuclib_lines, volume)
+            assembled_lines = bib.make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines, all_sched_lines, trunc_tolerance)
+            with open(inp_file_folder+"/"+filenames[training_dict_idx], 'w') as new_inp:
+                new_inp.write(assembled_lines)    
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--training_case_yaml', default = "make_training_cases.yaml", help="Path (str) to YAML containing inputs to construct training data")
+    parser.add_argument('--training_case_yaml', default = "make_training_inps.yaml", help="Path (str) to YAML containing inputs to construct training data")
     args = parser.parse_args()
     return args
 

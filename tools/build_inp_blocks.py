@@ -68,7 +68,7 @@ def make_flux_block(flux_dict):
     '''
     flux_lines = ""
     for (flux_path, flux_norm), flux_name in flux_dict.items():
-        flux_lines += f"flux {flux_name} {flux_path} {flux_norm} 0 default\n"
+        flux_lines += f"flux {flux_name} {flux_path+"_for_all_nuc"} {flux_norm} 0 default\n"
     return flux_lines + "\n"
 
 

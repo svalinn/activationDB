@@ -62,13 +62,16 @@ def make_flux_dict(child_dicts, flux_counter=None):
     return flux_dict
 
 
-def make_flux_block(flux_dict):
+def make_flux_block(flux_dict, modifier):
     '''
     Create the flux block of an ALARA input file.
+    :param: modifier (str, used to modify the end of the flux path)
+            (This is motivated by the flux table in the SQLite DB containing the flux spectrum of the group structure,
+            but the flux file used to run ALARA requires the flux spectrum to be repeated for each interval in the material loading.)
     '''
     flux_lines = ""
     for (flux_path, flux_norm), flux_name in flux_dict.items():
-        flux_lines += f"flux {flux_name} {flux_path+"_for_all_nuc"} {flux_norm} 0 default\n"
+        flux_lines += f"flux {flux_name} {flux_path+modifier} {flux_norm} 0 default\n"
     return flux_lines + "\n"
 
 

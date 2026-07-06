@@ -62,7 +62,7 @@ def make_flux_dict(child_dicts, flux_counter=None):
     return flux_dict
 
 
-def make_flux_block(flux_dict, modifier):
+def make_flux_block(flux_dict, flux_path_modifier):
     '''
     Create the flux block of an ALARA input file.
     :param: modifier (str, used to modify the end of the flux path)
@@ -71,7 +71,7 @@ def make_flux_block(flux_dict, modifier):
     '''
     flux_lines = ""
     for (flux_path, flux_norm), flux_name in flux_dict.items():
-        flux_lines += f"flux {flux_name} {flux_path+modifier} {flux_norm} 0 default\n"
+        flux_lines += f"flux {flux_name} {flux_path+flux_path_modifier} {flux_norm} 0 default\n"
     return flux_lines + "\n"
 
 

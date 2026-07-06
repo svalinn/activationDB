@@ -105,7 +105,7 @@ def test_make_flux_dict(child_dicts, flux_counter, exp_flux_dict):
     obs_flux_dict = build_inp_blocks.make_flux_dict(child_dicts, flux_counter)
     assert obs_flux_dict == exp_flux_dict
 
-@pytest.mark.parametrize("flux_dict, modifier, exp_flux_block", [
+@pytest.mark.parametrize("flux_dict, flux_path_modifier, exp_flux_block", [
     ({
         ('./ex_flux', 1) : 'flux_1',
         ('../flux_file', 2) : 'flux_3'
@@ -118,8 +118,8 @@ def test_make_flux_dict(child_dicts, flux_counter, exp_flux_dict):
     )
     ])
 
-def test_make_flux_block(flux_dict, modifier, exp_flux_block):
-    obs_flux_block = build_inp_blocks.make_flux_block(flux_dict, modifier)
+def test_make_flux_block(flux_dict, flux_path_modifier, exp_flux_block):
+    obs_flux_block = build_inp_blocks.make_flux_block(flux_dict, flux_path_modifier)
     assert normalize_lines(obs_flux_block) == normalize_lines(exp_flux_block)
 
 @pytest.mark.parametrize("ph_dict, exp_ph_block", [

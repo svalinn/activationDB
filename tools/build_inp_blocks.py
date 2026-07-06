@@ -17,6 +17,7 @@ as its parent.
     'pulse_length': (float),
     'pulse_length_unit': (str),
     'flux_filepath' : (str),
+    'flux_norm' : (float),
     'pulse_history': (iterable of (int, float, str)),
     'delay_dur' : (float),
     'delay_dur_unit': (str)
@@ -54,7 +55,7 @@ def make_flux_dict(child_dicts, flux_counter=None):
     for child_dict in child_dicts:
         if child_dict['type'] == 'pulse_entry':
             flux_dict[
-                child_dict['flux_filepath']] = f'flux_{next(flux_counter)}'
+                (child_dict['flux_filepath'], child_dict['flux_norm'])] = f'flux_{next(flux_counter)}'
         elif child_dict['type'] == 'schedule':
             flux_dict |= make_flux_dict(child_dict['children'], flux_counter)
 
@@ -66,8 +67,8 @@ def make_flux_block(flux_dict):
     Create the flux block of an ALARA input file.
     '''
     flux_lines = ""
-    for flux_path, name in flux_dict.items():
-        flux_lines += f"flux {name} {flux_path} 0 default\n"
+    for (flux_path, flux_norm), flux_name in flux_dict.items():
+        flux_lines += f"flux {flux_name} {flux_path} {flux_norm} 0 default\n"
     return flux_lines + "\n"
 
 
@@ -99,7 +100,7 @@ def make_schedule_block(child_dicts, ph_dict, flux_dict, sched_counter=None, sch
             current_sched_lines += (
                 f"{child_dict['pulse_length']}\t"
                 f"{child_dict['pulse_length_unit']}\t"
-                f"{flux_dict[child_dict['flux_filepath']]}\t"
+                f"{flux_dict[(child_dict['flux_filepath'], child_dict['flux_norm'])]}\t"
                 f"{ph_dict[tuple(child_dict['pulse_history'])]}\t"
                 f"{child_dict['delay_dur']}\t"
                 f"{child_dict['delay_dur_unit']}\n"
@@ -149,7 +150,7 @@ def make_volume_block(nuclib_lines, volume):
 
 
 def make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines, all_sched_lines,
-                     trunc_tolerance, nuclib_lines):
+                     trunc_tolerance):
     """
     Collect volume, loading, and mixture blocks from make_volume_block().
     Assemble with data and output block-related lines that are expected to change infrequently.

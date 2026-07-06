@@ -58,7 +58,7 @@ def main():
     min_on_times = inputs['min_on_times']
     time_unit = inputs['min_on_time_unit']
     sqlite_conn_db_name = inputs['sqlite_db_name']
-    nuclib = input['nuclib_path']
+    nuclib = inputs['nuclib_path']
     volume = inputs['volume']
     trunc_tolerance = inputs['trunc_tolerance']
     inp_file_folder = inputs['inp_file_folder']
@@ -70,4 +70,7 @@ def main():
     all_training_dicts = make_all_dicts(training_inp_info, min_on_times, time_unit)
 
     make_all_input_files(all_training_dicts, nuclib, volume, trunc_tolerance, inp_file_folder, filenames)
+
+if __name__ == "__main__":
+    main()    
 

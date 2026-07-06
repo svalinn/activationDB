@@ -29,25 +29,25 @@ def make_flux_tirr_combos(rel_on_time_factors, flux_norm_factors, flux_files):
     return training_inp_info
 
 
-def write_training_params_dict(training_inp_info, min_on_time, time_unit):
+def write_training_params_dict(training_inp_info, min_on_times, time_unit):
     """
     This function takes a an array of input parameters and converts them into a dictionary of the form below.
     This dictionary can be used to build a single-line schedule with a single-line pulse history. A separate
     dictionary for each viable combination of input parameters is constructed, and each dictionary is stored
     in a numpy array of shape len(rel_on_time_factors) x len(flux_norm_factors) x len(flux_files).
 
-    :param: min_on_time (minimum total amount of time (float) during which the flux is nonzero)
+    :param: min_on_times (iterable of minimum total amount of time (float) during which the flux is nonzero)
     :param: time_unit (unit (str) of pulse length)
     """
-    training_child_dicts = np.empty_like(training_inp_info)
-    for inp_info_idx in np.ndindex(training_inp_info.shape):
-        if training_inp_info[inp_info_idx] == None:
+    training_child_dicts = np.empty((len(min_on_times),) + training_inp_info.shape, dtype=object)
+    for (min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx), _ in np.ndenumerate(training_child_dicts):
+        if training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx] == None:
             continue
         else:
-            rel_on_time_factor, flux_norm_factor, flux_file = training_inp_info[inp_info_idx]
-            training_child_dicts[inp_info_idx] = {
+            rel_on_time_factor, flux_norm_factor, flux_file = training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx]
+            training_child_dicts[min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx] = {
                         'type': 'pulse_entry',
-                        'pulse_length': min_on_time * rel_on_time_factor,
+                        'pulse_length': min_on_times[min_on_time_idx] * rel_on_time_factor,
                         'pulse_length_unit': time_unit,
                         'flux_filepath': flux_file,
                         'flux_norm': flux_norm_factor,

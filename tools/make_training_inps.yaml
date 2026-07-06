@@ -42,4 +42,4 @@ flux_path_modifier : _for_all_nuc
 nuclib_path : /userspace/asrajendra/research/ALARA_fork/ALARA/data/nuclib.std
 volume : 1
 trunc_tolerance : 1e-05
-inp_file_folder : /userspace/asrajendra/research/activationDB/training_files
+inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files

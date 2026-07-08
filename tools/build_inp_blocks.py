@@ -164,7 +164,7 @@ def make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines,
     :param: nuclib (str, path to ALARA nuclide library)
     """
     data_output_lines = """material_lib matlib.sample
-    element_lib elelib.std
+    element_lib nuclib.std
     data_library alaralib fendl2bin
 
     output zone

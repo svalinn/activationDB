@@ -3,7 +3,7 @@ import sqlite3
 import numpy as np
 import make_testing_filenames as mtf
 
-@pytest.mark.parametrize("training_inp_info, sqlite_conn, nums_pulses, dwell_times, min_on_times, on_time_unit, dwell_time_unit, exp_filenames", [
+@pytest.mark.parametrize("training_inp_info, sqlite_conn, nums_pulses, dwell_times, min_on_times, on_time_unit, dwell_time_unit, trunc_tol, exp_filenames", [
     (
 np.array([
         [
@@ -50,6 +50,7 @@ np.array([
         [10, 20],
         'y',
         's',
+        1e-03,
         np.array([[[[
         [
             [
@@ -58,9 +59,9 @@ np.array([
             ],
 
             [
-            f"2_0.2s_1_0.3_10y_2",
+            f"2_0.2s_1_0.3_10y_2_1.000e-03",
       
-      f"2_0.2s_2_0.3_10y_2"
+      f"2_0.2s_2_0.3_10y_2_1.000e-03"
             ]
         ],
 
@@ -84,9 +85,9 @@ np.array([
             ],
 
             [
-            f"2_0.2s_1_0.3_20y_2",
+            f"2_0.2s_1_0.3_20y_2_1.000e-03",
       
-      f"2_0.2s_2_0.3_20y_2"
+      f"2_0.2s_2_0.3_20y_2_1.000e-03"
             ]
         ],
 
@@ -112,9 +113,9 @@ np.array([
             ],
 
             [
-            f"2_0.5s_1_0.3_10y_2",
+            f"2_0.5s_1_0.3_10y_2_1.000e-03",
       
-      f"2_0.5s_2_0.3_10y_2"
+      f"2_0.5s_2_0.3_10y_2_1.000e-03"
             ]
         ],
 
@@ -138,9 +139,9 @@ np.array([
             ],
 
             [
-            f"2_0.5s_1_0.3_20y_2",
+            f"2_0.5s_1_0.3_20y_2_1.000e-03",
       
-      f"2_0.5s_2_0.3_20y_2"
+      f"2_0.5s_2_0.3_20y_2_1.000e-03"
             ]
         ],
 
@@ -166,9 +167,9 @@ np.array([
             ],
 
             [
-            f"5_0.2s_1_0.3_10y_2",
+            f"5_0.2s_1_0.3_10y_2_1.000e-03",
       
-      f"5_0.2s_2_0.3_10y_2"
+      f"5_0.2s_2_0.3_10y_2_1.000e-03"
             ]
         ],
 
@@ -192,9 +193,9 @@ np.array([
             ],
 
             [
-            f"5_0.2s_1_0.3_20y_2",
+            f"5_0.2s_1_0.3_20y_2_1.000e-03",
       
-      f"5_0.2s_2_0.3_20y_2"
+      f"5_0.2s_2_0.3_20y_2_1.000e-03"
             ]
         ],
 
@@ -220,9 +221,9 @@ np.array([
             ],
 
             [
-            f"5_0.5s_1_0.3_10y_2",
+            f"5_0.5s_1_0.3_10y_2_1.000e-03",
       
-      f"5_0.5s_2_0.3_10y_2"
+      f"5_0.5s_2_0.3_10y_2_1.000e-03"
             ]
         ],
 
@@ -246,9 +247,9 @@ np.array([
             ],
 
             [
-            f"5_0.5s_1_0.3_20y_2",
+            f"5_0.5s_1_0.3_20y_2_1.000e-03",
       
-      f"5_0.5s_2_0.3_20y_2"
+      f"5_0.5s_2_0.3_20y_2_1.000e-03"
             ]
         ],
 
@@ -269,6 +270,6 @@ np.array([
     ], dtype=object)
 )])
 
-def test_make_filename_strings(training_inp_info, sqlite_conn, nums_pulses, dwell_times, min_on_times, on_time_unit, dwell_time_unit, exp_filenames):
-    obs_filenames = mtf.make_single_level_ph_filename_strings(training_inp_info, sqlite_conn, nums_pulses, dwell_times, min_on_times, on_time_unit, dwell_time_unit)
+def test_make_filename_strings(training_inp_info, sqlite_conn, nums_pulses, dwell_times, min_on_times, on_time_unit, dwell_time_unit, trunc_tol, exp_filenames):
+    obs_filenames = mtf.make_single_level_ph_filename_strings(training_inp_info, sqlite_conn, nums_pulses, dwell_times, min_on_times, on_time_unit, dwell_time_unit, trunc_tol)
     assert np.array_equal(obs_filenames, exp_filenames)

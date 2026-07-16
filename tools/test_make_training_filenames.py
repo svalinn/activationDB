@@ -3,7 +3,7 @@ import numpy as np
 import sqlite3
 import make_training_filenames as mtf
 
-@pytest.mark.parametrize("training_inp_info, sqlite_conn, min_on_times, time_unit, exp_filenames", [
+@pytest.mark.parametrize("training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tol, exp_filenames", [
     (
 np.array([
         [
@@ -47,6 +47,7 @@ np.array([
             }.values()))).connection,
         [10, 20],
         's',
+        1e-05,
         np.array([[
         [
             [
@@ -55,9 +56,9 @@ np.array([
             ],
 
             [
-            "1_0.3_10s_2",
+            "1_0.3_10s_2_1.000e-05",
       
-      "2_0.3_10s_2"
+      "2_0.3_10s_2_1.000e-05"
             ]
         ],
 
@@ -81,9 +82,9 @@ np.array([
             ],
 
             [
-            "1_0.3_20s_2",
+            "1_0.3_20s_2_1.000e-05",
       
-      "2_0.3_20s_2"
+      "2_0.3_20s_2_1.000e-05"
             ]
         ],
 
@@ -102,6 +103,6 @@ np.array([
     ], dtype=object)
 )])
 
-def test_make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, exp_filenames):
-    obs_filenames = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit)
+def test_make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tol, exp_filenames):
+    obs_filenames = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tol)
     assert np.array_equal(obs_filenames, exp_filenames)

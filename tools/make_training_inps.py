@@ -83,7 +83,7 @@ def main():
     training_child_dicts = tiptd.write_training_params_dict(training_inp_info, min_on_times, time_unit)
 
     sqlite_conn = sqlite3.connect(sqlite_conn_db_name)
-    filenames = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit)
+    filenames = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tolerance)
     sqlite_conn.close()
 
     make_all_input_files(training_child_dicts, flux_path_modifier, nuclib, volume, trunc_tolerance, inp_file_folder, filenames)

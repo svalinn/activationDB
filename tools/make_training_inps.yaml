@@ -1,4 +1,6 @@
 min_on_times :
+  - 1
+  - 5
   - 10
   - 20
   - 30
@@ -41,5 +43,5 @@ sqlite_db_name : activation_results.db
 flux_path_modifier : _for_all_nuc
 nuclib_path : /userspace/asrajendra/research/ALARA_fork/ALARA/data/nuclib.std
 volume : 1
-trunc_tolerance : 1e-05
+trunc_tolerance : 1e-04
 inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files

@@ -8,7 +8,7 @@ the maximum flux magnitude, minimum irradiation time, and scaling factors of flu
 This is repeated for a series of flux spectra.
 '''
 
-def make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit):
+def make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tol):
     """
     :param: training_inp_info (3D numpy array where each dimension corresponds to
     relative fluence factors (float), flux normalization factors (float), and paths to flux files (str), respectively)
@@ -16,6 +16,7 @@ def make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_uni
     :param: sqlite_conn (SQLite connection object to database containing flux table)
     :param: min_on_times (iterable of minimum steady-state operational times used to define the total fluence)
     :param: time_unit (unit (str) of min_on_times)
+    :param: trunc_tol (float)
     """
     filenames = np.empty((len(min_on_times),) + training_inp_info.shape, dtype=object)
     for (min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx), _ in np.ndenumerate(filenames):
@@ -25,7 +26,7 @@ def make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_uni
         else:
             rel_on_time_factor, flux_norm_factor, flux_file = entry
             flux_id = qsd.find_flux_spec_shape_id(sqlite_conn, "flux_file", flux_file)
-            filename = f"{flux_id}_{flux_norm_factor}_{min_on_times[min_on_time_idx]}{time_unit}_{rel_on_time_factor}"
+            filename = f"{flux_id}_{flux_norm_factor}_{min_on_times[min_on_time_idx]}{time_unit}_{rel_on_time_factor}_{float(trunc_tol):.3e}"
             filenames[min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx] = filename
     return filenames
 

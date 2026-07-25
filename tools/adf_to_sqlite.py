@@ -38,6 +38,18 @@ def normalize_flux(flux_array):
     return norm_flux_arr
 
 
+def average_flux(flux_array, t_irr):
+    '''
+    Obtain the total flux by summing over the bin widths of the flux array,
+    then divide the total flux by an array of total irradiation times to obtain average flux magnitudes.
+    :param: flux_array: (numpy array of shape # intervals x # energy groups)
+    :param: t_irr: (float) total irradiation time over which flux is applied
+    '''
+    total_flux = np.sum(flux_array, axis=1)
+    avg_flux_arr = total_flux / t_irr
+    return avg_flux_arr
+
+
 def find_flux_spec_shape_id(sqlite_conn, flux_spec_shape):
     '''
     Assuming that a table called flux_spectra exists in the database, find

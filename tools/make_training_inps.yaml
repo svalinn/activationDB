@@ -1,3 +1,4 @@
+#completed 7/24 on cnerg-docker machine
 min_on_times :
   - 1
   - 5
@@ -8,6 +9,7 @@ min_on_times :
 min_on_time_unit : y 
 
 rel_on_time_factors :
+  - 1.0
   - 1.5
   - 2.0
   - 2.5
@@ -44,4 +46,7 @@ flux_path_modifier : _for_all_nuc
 nuclib_path : /userspace/asrajendra/research/ALARA_fork/ALARA/data/nuclib.std
 volume : 1
 trunc_tolerance : 1e-04
+
 inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files
+out_file_folder: /userspace/asrajendra/research/activationDB/training_files/output_files
+alara_exec_path : /userspace/asrajendra/research/alara_installation/bld/src/alara

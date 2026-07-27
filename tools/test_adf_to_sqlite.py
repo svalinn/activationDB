@@ -71,49 +71,6 @@ def test_modify_adf_for_db(adf):
     assert (all(col in adf
                 for col in ["num_dens_(atoms/cm3)", "half_life", "block_name"]))
 
-# @pytest.mark.parametrize( "test_adf, norm_flux_arr, avg_flux_arr, sqlite_conn, t_irr_arr_mod, exp_mod_adf",
-#                           [
-#                             (aop.ALARADFrame(data=
-#                             {"num_dens_(atoms/cm3)": [5.678e-11]*2,
-#                             "block_name": ["Be", "W"],
-#                             "nuclide": ["h-1"]*2,
-#                             "half_life": ["-1"]*2,
-#                             "run_lbl": ["test_case", "new_test_case"]}),
-#                             np.array([[num / 25 for num in [1,3,5,7,9]], [num / 30 for num in [2,4,6,8,10]]
-#                                     ]),
-#                             np.array([25/5, 30/5]),
-#                             sqlite3.connect(":memory:").execute("""CREATE TABLE IF NOT EXISTS flux_spectra (
-#                             flux_spec_shape_id INT PRIMARY KEY,
-#                             flux_spec_shape TEXT) 
-#                             """).executemany("INSERT INTO flux_spectra (flux_spec_shape_id, flux_spec_shape) VALUES (?, ?)",
-#                             list(zip(*{
-#                                     'flux_spec_shape_id' : [1,2],
-#                                     'flux_spec_shape' : [json.dumps([num / 25 for num in [1,3,5,7,9]]),
-#                                                     json.dumps([num / 30 for num in [2,4,6,8,10]])]
-#                                     }.values()))
-#                                     ).connection,
-
-#                             np.array([7.5]*2),
-#                             aop.ALARADFrame(data=
-#                             {"num_dens_(atoms/cm3)": [5.678e-11]*2,
-#                             "block_name": ["Be", "W"],
-#                             "nuclide": ["h-1"]*2,
-#                             "half_life": ["-1"]*2,
-#                             "run_lbl": ["test_case", "new_test_case"],
-#                             "flux_spec_shape_id" : [1,2],
-#                             "avg_flux_mag" : [5,6],
-#                             "t_irr" : [7.5]*2
-#                             })
-#                             )
-#                           ])
-
-# def test_map_adf_flux_tirr(test_adf, norm_flux_arr, avg_flux_arr, sqlite_conn, t_irr_arr_mod, exp_mod_adf):
-#     obs_mod_adf = ats.map_adf_flux_tirr(test_adf, norm_flux_arr, avg_flux_arr, sqlite_conn, t_irr_arr_mod)
-#     pd.testing.assert_series_equal(obs_mod_adf['flux_spec_shape_id'], 
-#                                    exp_mod_adf['flux_spec_shape_id'], 
-#                                    check_dtype=False)
-#     assert all(obs_mod_adf["t_irr"]) == all(exp_mod_adf["t_irr"])
-
 @pytest.mark.parametrize( "test_adf, flux_array, sqlite_conn, t_irr, exp_mod_adf",
                           [
                             (aop.ALARADFrame(data=

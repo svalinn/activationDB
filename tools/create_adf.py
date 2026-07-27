@@ -13,4 +13,11 @@ def generate_adfs_from_dict(run_dict):
     for run_lbl, output_filepath in run_dict.items():
         adf = generate_adf(run_lbl, output_filepath)
         adf_list.append(adf)
-    return adf_list    
+    return adf_list
+
+def generate_adfs_from_mult_dicts(run_dicts):
+    adf_dict_list = []
+    for run_dict in run_dicts:
+        adf_list = generate_adfs_from_dict(run_dict)
+        adf_dict_list.extend(adf_list)
+    return adf_dict_list    

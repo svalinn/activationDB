@@ -51,7 +51,7 @@ def test_average_flux(flux_arr, t_irr, exp_avg_flux_arr):
         "block_num": [2]*2,
         "nuclide": ["h-1"]*2,
         "half_life": ["-1"]*2,
-        "run_lbl": ["test_case", "new_test_case"]}))
+        "run_lbl": ["test_case", "test_case"]}))
                           ])
 
 def test_modify_adf_for_db(adf):
@@ -78,7 +78,7 @@ def test_modify_adf_for_db(adf):
                             "block_name": ["Be", "W"],
                             "nuclide": ["h-1"]*2,
                             "half_life": ["-1"]*2,
-                            "run_lbl": ["test_case", "new_test_case"]}),
+                            "run_lbl": ["test_case", "test_case"]}),
                             np.array([[1,3,5,7,9], [2,4,6,8,10]]),
                             sqlite3.connect(":memory:").execute("""CREATE TABLE IF NOT EXISTS flux_spectra (
                             flux_spec_shape_id INT PRIMARY KEY,
@@ -96,7 +96,7 @@ def test_modify_adf_for_db(adf):
                             "block_name": ["Be", "W"],
                             "nuclide": ["h-1"]*2,
                             "half_life": ["-1"]*2,
-                            "run_lbl": ["test_case", "new_test_case"],
+                            "run_lbl": ["test_case", "test_case"],
                             "flux_spec_shape_id" : [1,2],
                             "avg_flux_mag" : [5,6],
                             "t_irr" : [5]*2
@@ -115,7 +115,7 @@ def test_map_adf_flux_tirr(test_adf, flux_array, sqlite_conn, t_irr, exp_mod_adf
         "block_name": ["Be", "W"],
         "nuclide": ["h-1"]*2,
         "half_life": ["-1"]*2,
-        "run_lbl": ["test_case", "new_test_case"]}))
+        "run_lbl": ["test_case", "test_case"]}))
                           ])
     
 def test_write_to_sqlite(mod_adf):

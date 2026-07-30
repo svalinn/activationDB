@@ -17,7 +17,7 @@ import json
             ).executemany("INSERT INTO flux_spectra (flux_file, flux_spectrum) VALUES (?, ?)",
             list(zip(*{
                 'flux_file' : ['../fnsf', '../iter_dt'],
-                'flux_spectrum' : ['[3, 9,12]', json.dumps([5,7, 11, 13, 25])]
+                'flux_spectrum' : ["[3, 9,12]", json.dumps([5,7, 11, 13, 25])]
             }.values()))).connection,
         'flux_spectrum',
         [3,9, 12],

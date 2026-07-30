@@ -1,6 +1,14 @@
-import make_flux_table
+import make_flux_table as mft
+import adf_to_sqlite as ats
 import sqlite3
+import yaml
+import argparse
 
+def save_flux_spectra_to_db(flux_files, flux_spectra):
+    '''
+    :param: flux_files (iterable of str, paths to files containing flux spectra)
+    :param: flux_spectra (iterable of iterables stored as text)
+    '''
 
 flux_data_dict = {
     'flux_file':['/userspace/a/asrajendra/research/activationDB/training_flux_files/iter_dt'],
@@ -9,8 +17,8 @@ flux_data_dict = {
 conn = sqlite3.connect("activation_results.db")
 cur = conn.cursor()
 
-make_flux_table.create_flux_table(cur)
-make_flux_table.populate_flux_table(cur, flux_data_dict)
+mft.create_flux_table(cur)
+mft.populate_flux_table(cur, flux_data_dict)
 conn.commit()
 cur.close()
 conn.close()

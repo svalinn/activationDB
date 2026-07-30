@@ -12,6 +12,14 @@ def create_flux_table(cur):
     )
     """
     )
+
+def format_spectrum_as_json(flux_spectrum):
+    '''
+    :param: flux_spectrum (iterable of flux values (float) for some group structure)
+    '''
+    flux_spectrum = flux_spectrum.to_list()
+    
+
   
 def populate_flux_table(cur, flux_data_dict):
     """
@@ -20,7 +28,7 @@ def populate_flux_table(cur, flux_data_dict):
     :param: flux_data_dict (dictionary with the form below)
     {
     'flux_file' : (str, path to file containing flux spectrum),
-    'flux_spectrum' : (str, iterable of flux values for some group structure, stored as text)
+    'flux_spectrum' : (str, iterable of flux values (float) for some group structure, stored as text)
     }
     """
     cur.executemany(

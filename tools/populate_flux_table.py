@@ -15,19 +15,6 @@ def prepare_flux_spectra(flux_spectra):
     norm_flux_arr_str = np.asarray([str(norm_flux_spec) for norm_flux_spec in norm_flux_arr])
     return norm_flux_arr_str
 
-
-def save_flux_spectra_to_db(flux_files, norm_flux_arr_str, cur):
-    '''
-    :param: flux_files (iterable of str, paths to files containing flux spectra)
-    :param: norm_flux_arr_str (iterable of iterables of normalized fluxes (float), with each series of normalized fluxes stored as str)
-    :param: cur (sqlite cursor object that points to a connection with a table called flux_spectra)
-    '''
-    flux_data_dict = {'flux_files' : flux_files,
-                      'flux_spectra' : norm_flux_arr_str
-                      }
-    mft.create_flux_table(cur)
-    mft.populate_flux_table(cur, flux_data_dict)
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--flux_yaml", help="yaml file containing flux spectra labeled by the path to the flux file", default="flux_spectra.yaml")
@@ -51,7 +38,12 @@ def main():
     cur = conn.cursor()
 
     norm_flux_arr_str = prepare_flux_spectra(flux_spectra)
-    save_flux_spectra_to_db(flux_files, norm_flux_arr_str, cur)
+
+    flux_data_dict = {'flux_files' : flux_files,
+                      'flux_spectra' : norm_flux_arr_str
+                      }
+    mft.create_flux_table(cur)
+    mft.populate_flux_table(cur, flux_data_dict)
 
     conn.commit()
     cur.close()

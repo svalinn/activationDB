@@ -26,7 +26,7 @@ def populate_flux_table(cur, flux_data_dict):
     cur.executemany(
             "INSERT INTO flux_spectra (flux_file, flux_spectrum) VALUES (?, ?)",
             list(zip(
-                flux_data_dict['flux_file'],
+                flux_data_dict['flux_files'],
                 flux_data_dict['flux_spectra']
             )),
     )

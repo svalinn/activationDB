@@ -19,11 +19,14 @@ def populate_flux_table(cur, flux_data_dict):
     :param: cur (sqlite cursor object that points to a connection with a table called flux_spectra)
     :param: flux_data_dict (dictionary with the form below)
     {
-    'flux_file' : (str, path to file containing flux spectrum),
-    'flux_spectrum' : (str, iterable of flux values for some group structure, stored as text)
+    'flux_files' : (str, path to files containing flux spectrum),
+    'flux_spectra' : (str, iterable of iterables of flux values (float) for some group structure, stored as text)
     }
     """
     cur.executemany(
             "INSERT INTO flux_spectra (flux_file, flux_spectrum) VALUES (?, ?)",
-            list(zip(*flux_data_dict.values())),
+            list(zip(
+                flux_data_dict['flux_file'],
+                flux_data_dict['flux_spectra']
+            )),
     )

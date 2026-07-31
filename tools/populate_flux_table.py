@@ -1,26 +1,64 @@
+import numpy as np
 import make_flux_table as mft
 import adf_to_sqlite as ats
 import sqlite3
 import yaml
 import argparse
 
-def save_flux_spectra_to_db(flux_files, flux_spectra):
+def prepare_flux_spectra(flux_spectra):
+    '''
+    Takes a set of flux spectra and modifies them to 
+    :param: flux_spectra (iterable of iterables of fluxes (float))
+    '''
+    flux_spectra = np.asarray(flux_spectra)
+    norm_flux_arr = ats.normalize_flux(flux_spectra)
+    norm_flux_arr_str = np.asarray([str(norm_flux_spec) for norm_flux_spec in norm_flux_arr])
+    return norm_flux_arr_str
+
+
+def save_flux_spectra_to_db(flux_files, norm_flux_arr_str, cur):
     '''
     :param: flux_files (iterable of str, paths to files containing flux spectra)
-    :param: flux_spectra (iterable of iterables stored as text)
+    :param: norm_flux_arr_str (iterable of iterables of normalized fluxes (float), with each series of normalized fluxes stored as str)
+    :param: cur (sqlite cursor object that points to a connection with a table called flux_spectra)
     '''
+    flux_data_dict = {'flux_files' : flux_files,
+                      'flux_spectra' : norm_flux_arr_str
+                      }
+    mft.create_flux_table(cur)
+    mft.populate_flux_table(cur, flux_data_dict)
 
-flux_data_dict = {
-    'flux_file':['/userspace/a/asrajendra/research/activationDB/training_flux_files/iter_dt'],
-    'flux_spectrum' : ['[0.0000E+00,0.0000E+00,0.0000E+00,3.5902E+08,4.5626E+11,3.2424E+12,9.7755E+12,1.2871E+13,8.0511E+12,4.0469E+12,5.4033E+11,3.5520E+11,4.8787E+11,5.0502E+11,6.1120E+11,6.1630E+11,5.4840E+11,4.7361E+11,4.0821E+11,3.7307E+11,3.6693E+11,3.6568E+11,3.5911E+11,3.5702E+11,1.2008E+11,2.4494E+11,3.8046E+11,3.9631E+11,4.1125E+11,4.2209E+11,4.2622E+11,4.3537E+11,4.3943E+11,9.1047E+11,9.1034E+11,9.4013E+11,4.8952E+11,4.9938E+11,5.0334E+11,5.0841E+11,5.8318E+11,6.5309E+11,4.5646E+11,1.2086E+11,1.2073E+11,2.3916E+11,4.9990E+11,7.7873E+11,8.3155E+11,8.8095E+11,9.4865E+11,1.0299E+12,1.0813E+12,1.0965E+12,1.1033E+12,1.1264E+12,1.1517E+12,1.1579E+12,1.1803E+12,1.2560E+12,1.2433E+12,2.4307E+12,1.0270E+12,1.5199E+12,1.3323E+12,1.4032E+12,1.3301E+12,1.4489E+12,1.4789E+12,1.4811E+12,1.3859E+12,1.0160E+12,1.3468E+12,1.5008E+12,1.4771E+12,1.5021E+12,2.9376E+12,2.8276E+12,1.3865E+12,1.3714E+12,2.6648E+12,2.5623E+12,2.9805E+11,1.0945E+11,2.3344E+11,6.0671E+11,1.2226E+12,2.3543E+12,1.1257E+12,1.0933E+12,1.0478E+12,1.0173E+12,9.7359E+11,9.8784E+11,9.8580E+11,9.2193E+11,9.3595E+11,8.9335E+11,8.5703E+11,7.9688E+11,9.2670E+11,8.3870E+11,8.4856E+11,8.0674E+11,1.8834E+12,1.8179E+12,6.3060E+11,5.2928E+11,1.3250E+12,9.3611E+11,2.1995E+12,8.9552E+11,1.5267E+12,1.4010E+12,1.8853E+12,7.9895E+11,1.0645E+12,5.0708E+11,3.2819E+11,4.5219E+11,3.0255E+11,2.7419E+11,7.4329E+11,1.1674E+12,2.1963E+12,2.1269E+12,7.7053E+11,1.1440E+12,1.9837E+12,1.8490E+12,1.8155E+12,1.0652E+12,7.2461E+11,6.9602E+11,6.7364E+11,2.9575E+11,2.9179E+11,7.1372E+11,5.3023E+11,1.7747E+12,1.6583E+12,1.5971E+12,1.5615E+12,1.4807E+12,1.4250E+12,1.3861E+12,1.3411E+12,1.3461E+12,1.3284E+12,1.2815E+12,1.2964E+12,1.2783E+12,1.2691E+12,1.2545E+12,1.2104E+12,1.1982E+12,1.1647E+12,1.1399E+12,1.1201E+12,1.0955E+12,1.0814E+12,1.0507E+12,1.0220E+12,9.8797E+11,9.5509E+11,9.3107E+11,9.0225E+11,8.7686E+11,8.4476E+11,8.1353E+11,7.7898E+11,7.4735E+11,7.1074E+11,3.5819E+12,3.1205E+12]']
-}
-conn = sqlite3.connect("activation_results.db")
-cur = conn.cursor()
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--flux_yaml", help="yaml file containing flux spectra labeled by the path to the flux file", default="flux_spectra.yaml")
+    parser.add_argument("--db_name", help="sqlite connection object pointing to a database with a flux table", default="activation_results.db")
+    args = parser.parse_args()
+    return args
 
-mft.create_flux_table(cur)
-mft.populate_flux_table(cur, flux_data_dict)
-conn.commit()
-cur.close()
-conn.close()
+def read_yaml(yaml_arg):
+    with open(yaml_arg, "r") as yaml_file:
+        inputs = yaml.safe_load(yaml_file)
+    return inputs
+
+def main():
+    args = parse_args()
+    inputs = read_yaml(args.flux_yaml)
+    flux_files = list(flux_file for flux_file in inputs)
+    flux_spectra = list(inputs[flux_file] for flux_file in inputs)
+    db_name = args.db_name
+
+    conn = sqlite3.connect(db_name)
+    cur = conn.cursor()
+
+    norm_flux_arr_str = prepare_flux_spectra(flux_spectra)
+    save_flux_spectra_to_db(flux_files, norm_flux_arr_str, cur)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+if __name__ == "__main__":
+    main()
 
 

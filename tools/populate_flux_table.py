@@ -1,6 +1,6 @@
 import numpy as np
 import make_flux_table as mft
-import adf_to_sqlite as ats
+from adf_to_sqlite import normalize_flux as nf
 import sqlite3
 import yaml
 import argparse
@@ -11,7 +11,7 @@ def prepare_flux_spectra(flux_spectra):
     :param: flux_spectra (iterable of iterables of fluxes (float))
     '''
     flux_spectra = np.asarray(flux_spectra)
-    norm_flux_arr = ats.normalize_flux(flux_spectra)
+    norm_flux_arr = nf(flux_spectra)
     norm_flux_arr_str = np.asarray([str(norm_flux_spec) for norm_flux_spec in norm_flux_arr])
     return norm_flux_arr_str
 

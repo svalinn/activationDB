@@ -21,8 +21,3 @@ def generate_adfs_from_mult_dicts(run_dicts):
         adf_list = generate_adfs_from_dict(run_dict)
         adf_dict_list.extend(adf_list)
     return adf_dict_list
-
-def write_sqlite_to_pdf(sqlite_conn):
-    query = "SELECT * FROM activation_results"
-    pdf = pd.read_sql_query(query, sqlite_conn)
-    return pdf

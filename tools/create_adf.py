@@ -14,12 +14,12 @@ def generate_single_adf(run_lbl, output_filepath):
 
 def generate_adfs_from_dict(run_dict):
     '''
-    Creates a list of ALARA DFrame objects, one for each run.
+    Creates a list of ALARA DFrame objects. A separate adf is generated for each run
+    as adf_to_sqlite.py is set up to work with one adf at a time. 
     :param: run_dict (dict of the form {'run_lbl_1' : 'output_filepath_1',
                                         'run_lbl_2' : 'output_filepath_2'
                                         })
     '''
-    # generating separate adfs for each run as adf_to_sqlite.py is set up to work with one adf at a time
     adf_list = []
     for run_lbl, output_filepath in run_dict.items():
         adf = generate_single_adf(run_lbl, output_filepath)

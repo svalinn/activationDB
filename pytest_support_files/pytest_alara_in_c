@@ -1,5 +1,3 @@
-## This problem runs on a set of regular pulses, which will grow in complexity in sample11 and sample12
-
 geometry rectangular
 
 volume
@@ -36,4 +34,4 @@ end
 
 #other parameters
 truncation 1
-dump_file sample10_dump.file
+dump_file pytest_alara_c_dump.file

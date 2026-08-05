@@ -34,4 +34,4 @@ end
 
 #other parameters
 truncation 1
-dump_file pytest_alara_dump.file
+dump_file pytest_alara_b_dump.file

@@ -48,7 +48,7 @@ def make_all_input_files(training_child_dicts, flux_path_modifier, nuclib, volum
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--training_case_yaml', default = "make_training_inps.yaml", help="Path (str) to YAML containing inputs to construct training data")
+    parser.add_argument('--training_case_yaml', help="Path (str) to YAML containing inputs to construct training data")
     args = parser.parse_args()
     return args
 

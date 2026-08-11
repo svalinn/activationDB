@@ -1,4 +1,3 @@
-#completed 7/24 on cnerg-docker machine
 min_on_times :
   - 1
   - 5
@@ -48,5 +47,3 @@ volume : 1
 trunc_tolerance : 1e-04
 
 inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files
-out_file_folder: /userspace/asrajendra/research/activationDB/training_files/output_files
-alara_exec_path : /userspace/asrajendra/research/alara_installation/bld/src/alara

@@ -40,7 +40,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             t_irr = schedule_transforms.flatten_pulse_history(pulse_length, pulse_history_tuple)[0]
 
             t_irr_arr_mod = np.asarray([t_irr]*len(adf))
-            adf = create_adf.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod)
+            adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod)
             conn_cursor = adf_to_sqlite.write_to_sqlite(adf, sqlite_conn)
 
             alara_bookkeeping.create_sqlite_table(conn_cursor)

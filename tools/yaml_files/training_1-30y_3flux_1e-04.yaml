@@ -35,9 +35,9 @@ flux_norm_factors :
   - 0.9
   - 1.0
 flux_files :
-  - /userspace/asrajendra/research/activationDB/training_flux_files/iter_dt
-  - /userspace/asrajendra/research/activationDB/training_flux_files/frascati_ng
-  - /userspace/asrajendra/research/activationDB/training_flux_files/fnsf
+  - /userspace/asrajendra/research/activationDB/flux_files/iter_dt
+  - /userspace/asrajendra/research/activationDB/flux_files/frascati_ng
+  - /userspace/asrajendra/research/activationDB/flux_files/fnsf
 
 sqlite_db_name : activation_results.db
 

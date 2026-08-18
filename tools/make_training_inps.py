@@ -76,7 +76,7 @@ def main():
     nuclib = inputs['nuclib_path']
     volume = inputs['volume']
     trunc_tolerance = inputs['trunc_tolerance']
-    inp_file_folder = inputs['inp_file_folder']
+    inp_file_folder = inputs['temp_inp_file_folder']
     flux_path_modifier = inputs['flux_path_modifier']
 
     training_inp_info = tiptd.make_flux_tirr_combos(rel_on_time_factors, flux_norm_factors, flux_files)

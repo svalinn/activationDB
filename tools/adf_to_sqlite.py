@@ -62,7 +62,7 @@ def modify_adf_for_db(adf):
     :param: adf: ALARA DFrame object
     '''
     adf = adf.filter_rows(filter_dict={
-        "time": -1,
+        "time": 0.000000e+00,
         "variable": adf.VARIABLE_ENUM["Number Density"]
     })
     #Remove some columns:

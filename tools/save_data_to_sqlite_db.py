@@ -87,7 +87,7 @@ def main():
     sqlite_conn = sqlite3.connect(sqlite_conn_db_name)
     filename_array = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tolerance)
     save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_folder, flux_path_modifier, sqlite_conn, git_hash)
-    adf_to_sqlite.close_sqlite_conn(sqlite_conn)
+    sqlite_conn.close()
 
 
 if __name__ == "__main__":

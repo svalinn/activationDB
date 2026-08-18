@@ -8,7 +8,7 @@ def create_flux_table(cur):
     cur.execute("""CREATE TABLE IF NOT EXISTS flux_spectra (
     flux_spec_shape_id INTEGER PRIMARY KEY,
     flux_file TEXT UNIQUE,
-    flux_spectrum TEXT UNIQUE
+    flux_spec_shape TEXT UNIQUE
     )
     """
     )
@@ -20,13 +20,13 @@ def populate_flux_table(cur, flux_data_dict):
     :param: flux_data_dict (dictionary with the form below)
     {
     'flux_files' : (str, path to files containing flux spectrum),
-    'flux_spectra' : (str, iterable of iterables of flux values (float) for some group structure, stored as text)
+    'flux_spec_shapes' : (str, iterable of iterables of normalized flux values (float) for some group structure, stored as text)
     }
     """
     cur.executemany(
-            "INSERT INTO flux_spectra (flux_file, flux_spectrum) VALUES (?, ?)",
+            "INSERT INTO flux_spectra (flux_file, flux_spec_shape) VALUES (?, ?)",
             list(zip(
                 flux_data_dict['flux_files'],
-                flux_data_dict['flux_spectra']
+                flux_data_dict['flux_spec_shapes']
             )),
     )

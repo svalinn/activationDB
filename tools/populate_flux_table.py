@@ -40,7 +40,7 @@ def main():
     norm_flux_arr_str = prepare_flux_spectra(flux_spectra)
 
     flux_data_dict = {'flux_files' : flux_files,
-                      'flux_spectra' : norm_flux_arr_str
+                      'flux_spec_shapes' : norm_flux_arr_str
                       }
     mft.create_flux_table(cur)
     mft.populate_flux_table(cur, flux_data_dict)

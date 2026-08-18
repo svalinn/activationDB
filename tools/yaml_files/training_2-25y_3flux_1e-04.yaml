@@ -1,9 +1,10 @@
 min_on_times :
-  - 1
-  - 5
-  - 10
-  - 20
-  - 30
+  - 2
+  - 4
+  - 6
+  - 8
+  - 15
+  - 25
 
 min_on_time_unit : y 
 
@@ -47,5 +48,6 @@ volume : 1
 trunc_tolerance : 1e-04
 
 inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files/trunc_tol_1e-04
-out_file_folder : /userspace/asrajendra/research/permanent_storage/training_files/output_files/trunc_tol_1e-04
+out_file_folder: /userspace/asrajendra/research/activationDB/training_files/output_files/trunc_tol_1e-04
+alara_exec_path : /userspace/asrajendra/research/alara_installation/bld/src/alara
 git_hash : f93d64f8e0f1dd67949de633fb9927e6c8ff1c8c

@@ -49,7 +49,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
                          "git_hash" : [git_hash]
                          }
             alara_bookkeeping.populate_table(conn_cursor, data_dict)
-            return conn_cursor
+            conn_cursor.close()
 
 
 def parse_args():
@@ -86,9 +86,8 @@ def main():
     training_inp_info = tiptd.make_flux_tirr_combos(rel_on_time_factors, flux_norm_factors, flux_files)
     sqlite_conn = sqlite3.connect(sqlite_conn_db_name)
     filename_array = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tolerance)
-    conn_cursor = save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_folder, flux_path_modifier, sqlite_conn, git_hash)
-    conn_cursor.connection.commit()
-    adf_to_sqlite.close_sqlite_conn(conn_cursor)
+    save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_folder, flux_path_modifier, sqlite_conn, git_hash)
+    adf_to_sqlite.close_sqlite_conn(sqlite_conn)
 
 
 if __name__ == "__main__":

@@ -4,15 +4,16 @@ from adf_to_sqlite import normalize_flux as nf
 import sqlite3
 import yaml
 import argparse
+import json
 
 def prepare_flux_spectra(flux_spectra):
     '''
-    Takes a set of flux spectra and modifies them to 
+    Takes a set of flux spectra and modifies each spectrum to be a json-formatted string.
     :param: flux_spectra (iterable of iterables of fluxes (float))
     '''
     flux_spectra = np.asarray(flux_spectra)
     norm_flux_arr = nf(flux_spectra)
-    norm_flux_arr_str = np.asarray([str(norm_flux_spec) for norm_flux_spec in norm_flux_arr])
+    norm_flux_arr_str = np.asarray([json.dumps(norm_flux_spec.tolist()) for norm_flux_spec in norm_flux_arr])
     return norm_flux_arr_str
 
 def parse_args():

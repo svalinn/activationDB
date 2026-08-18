@@ -46,6 +46,6 @@ nuclib_path : /userspace/asrajendra/research/ALARA_fork/ALARA/data/nuclib.std
 volume : 1
 trunc_tolerance : 1e-04
 
-inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files/trunc_tol_1e-04
+inp_file_folder : /userspace/asrajendra/research/permanent_storage/training_files/input_files/trunc_tol_1e-04
 out_file_folder : /userspace/asrajendra/research/permanent_storage/training_files/output_files/trunc_tol_1e-04
 git_hash : f93d64f8e0f1dd67949de633fb9927e6c8ff1c8c

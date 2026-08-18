@@ -20,7 +20,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             continue
         else:
             output_path = out_file_folder + "/" + inp_filename + "_out"
-            run_lbl = uuid.uuid4()
+            run_lbl = str(uuid.uuid4())
             flux_file = training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx][2]
             all_flux_entries = adf_to_sqlite.open_flux_file(flux_file+flux_path_modifier)
             # hard-code number of stable nuclides?
@@ -87,7 +87,7 @@ def main():
     sqlite_conn = sqlite3.connect(sqlite_conn_db_name)
     filename_array = mtf.make_filename_strings(training_inp_info, sqlite_conn, min_on_times, time_unit, trunc_tolerance)
     conn_cursor = save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_folder, flux_path_modifier, sqlite_conn, git_hash)
-    conn_cursor.commit()
+    conn_cursor.connection.commit()
     adf_to_sqlite.close_sqlite_conn(conn_cursor)
 
 

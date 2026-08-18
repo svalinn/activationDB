@@ -19,6 +19,8 @@ total duration and fluence.
     'delay_dur' : (float)
 }
 ]
+The pulse history may also be structured as an iterable of (int, float, str), but
+only the first two entries are used in this script.
 '''
 def flatten_pulse_history(pulse_length, pulse_history):
     """
@@ -33,7 +35,7 @@ def flatten_pulse_history(pulse_length, pulse_history):
     :param pulse_length: (float) the duration of each pulse
     :param pulse_history : (int, float) of # pulses, dwell time
     """
-    num_pulses, dwell_time = pulse_history
+    num_pulses, dwell_time = pulse_history[:2]
     duration_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
     fluence_flat = num_pulses * pulse_length
 

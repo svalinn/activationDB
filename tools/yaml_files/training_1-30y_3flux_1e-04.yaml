@@ -1,0 +1,50 @@
+min_on_times :
+  - 1
+  - 5
+  - 10
+  - 20
+  - 30
+
+min_on_time_unit : y 
+
+rel_on_time_factors :
+  - 1.0
+  - 1.5
+  - 2.0
+  - 2.5
+  - 3.0
+  - 3.5
+  - 4.0
+  - 4.5
+  - 5.0
+  - 5.5
+  - 6.0
+  - 6.5
+  - 7.0
+  - 7.5
+  - 8.0
+flux_norm_factors :
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1.0
+flux_files :
+  - /userspace/asrajendra/research/activationDB/training_flux_files/iter_dt
+  - /userspace/asrajendra/research/activationDB/training_flux_files/frascati_ng
+  - /userspace/asrajendra/research/activationDB/training_flux_files/fnsf
+
+sqlite_db_name : activation_results.db
+
+flux_path_modifier : _for_all_nuc
+nuclib_path : /userspace/asrajendra/research/ALARA_fork/ALARA/data/nuclib.std
+volume : 1
+trunc_tolerance : 1e-04
+
+inp_file_folder : /userspace/asrajendra/research/activationDB/training_files/input_files
+git_hash : f93d64f8e0f1dd67949de633fb9927e6c8ff1c8c

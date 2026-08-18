@@ -62,13 +62,16 @@ def make_flux_dict(child_dicts, flux_counter=None):
     return flux_dict
 
 
-def make_flux_block(flux_dict):
+def make_flux_block(flux_dict, flux_path_modifier):
     '''
     Create the flux block of an ALARA input file.
+    :param: flux_path_modifier (str, used to modify the end of the flux path)
+            (This is motivated by the flux table in the SQLite DB containing the flux spectrum of the group structure,
+            but the flux file used to run ALARA requires the flux spectrum to be repeated for each interval in the material loading.)
     '''
     flux_lines = ""
     for (flux_path, flux_norm), flux_name in flux_dict.items():
-        flux_lines += f"flux {flux_name} {flux_path} {flux_norm} 0 default\n"
+        flux_lines += f"flux {flux_name} {flux_path+flux_path_modifier} {flux_norm} 0 default\n"
     return flux_lines + "\n"
 
 
@@ -161,7 +164,7 @@ def make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines,
     :param: nuclib (str, path to ALARA nuclide library)
     """
     data_output_lines = """material_lib matlib.sample
-    element_lib elelib.std
+    element_lib nuclib.std
     data_library alaralib fendl2bin
 
     output zone
@@ -172,8 +175,3 @@ def make_input_lines(vol_lines, load_lines, mix_lines, flux_lines, all_ph_lines,
     assembled_lines = "geometry rectangular\n" + vol_lines + load_lines + mix_lines + data_output_lines \
                     + "\n" + flux_lines + all_sched_lines + "\n" + all_ph_lines + f"truncation {trunc_tolerance}"
     return assembled_lines
-
-
-def write_inp_file(assembled_lines, input_filename):
-    with open(input_filename, 'w') as new_inp:
-        new_inp.write(assembled_lines)

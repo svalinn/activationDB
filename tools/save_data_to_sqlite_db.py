@@ -43,7 +43,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
 
             alara_bookkeeping.create_sqlite_table(conn_cursor)
             data_dict = {"id" : [run_lbl],
-                         "input_file" : [inp_file_folder+inp_filename],
+                         "input_file" : [inp_file_folder + "/" + inp_filename],
                          "output_file" : [output_path],
                          "flux_file" : [flux_file],
                          "git_hash" : [git_hash]

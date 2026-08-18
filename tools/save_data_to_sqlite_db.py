@@ -11,45 +11,6 @@ import sched_post_processor
 import schedule_transforms
 import alara_bookkeeping
 
-# def search_for_match(top_dict, search_str):
-#     '''
-#     Takes a top dictionary with nested lists and sub-dictionaries and searches for matches with a provided string.
-#     '''
-#     matches = []
-#     for key, value in top_dict.items():
-#         if key.startswith(search_str):
-#             matches.append(value)
-#         elif isinstance(value, dict):
-#             match_res = search_for_match(value, search_str)
-#             matches.extend(match_res)
-#         elif isinstance(value, list):
-#             for item in value:
-#                 if isinstance(item, dict):
-#                     results_from_list = search_for_match(item, search_str)
-#                     matches.extend(results_from_list)
-#     return matches
-
-def search_for_ph(top_dict, corr_ph_name, pulse_dict):
-    '''
-
-    '''
-    for key, value in top_dict.items():
-        if value == corr_ph_name:
-            top_dict[value] = pulse_dict[value]
-        elif isinstance(value, dict):
-            match_res = search_for_ph(value, corr_ph_name, pulse_dict)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    results_from_list = search_for_ph(item, corr_ph_name, pulse_dict)
-    return top_dict
-
-
-def attach_pulse_to_sch_dict(pulse_dict, sch_dict):
-    search_str = "corr_ph_name"
-    corr_ph_name = search_for_match(search_str)[0]
-
-
 
 def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_folder, flux_path_modifier, sqlite_conn, git_hash):
     for (min_on_time_idx, rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx), _ in np.ndenumerate(filename_array):
@@ -72,12 +33,9 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
 
             lines = sched_post_processor.read_out(output_path)
             pulse_dict = sched_post_processor.read_pulse_histories(lines)
-            sch_dict = sched_post_processor.make_nested_dict(lines)
-            sch_dict = sch_dict['top_schedule']['children']
-            pulse_length = sch_dict['top_schedule']['pulse_length']
-            pulse_history_verbose_dict = pulse_dict[sch_dict[0]['corr_ph_name']]
-            pulse_history_tuple = (pulse_history_verbose_dict["num_pulses_all_levels"], pulse_history_verbose_dict["delay_seconds_all_levels"])
-            t_irr = schedule_transforms.flatten_pulse_history(pulse_length, pulse_history_tuple)[0]
+            sch_tree = sched_post_processor.make_nested_dict(lines)
+            sch_tree = sched_post_processor.add_ph_to_sch_tree(sch_tree, pulse_dict)['top_schedule']['children']
+            t_irr = schedule_transforms.flatten_schedule(sch_tree)[0]
 
             t_irr_arr_mod = np.asarray([t_irr]*len(adf))
             adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod)
@@ -96,7 +54,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--training_case_yaml', help="Path (str) to YAML containing inputs to construct training data")
+    parser.add_argument('--training_case_yaml', '-t', help="Path (str) to YAML containing inputs to construct training data")
     args = parser.parse_args()
     return args
 

@@ -23,7 +23,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             run_lbl = str(uuid.uuid4())
             flux_file = training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx][2]
             all_flux_entries = adf_to_sqlite.open_flux_file(flux_file+flux_path_modifier)
-            # hard-code number of stable nuclides?
+            # 286 = # of stable target nuclides
             num_groups = int(len(all_flux_entries) / 286)
             flux_array = adf_to_sqlite.parse_flux_str(all_flux_entries, num_groups)
             norm_flux_arr = adf_to_sqlite.normalize_flux(flux_array)

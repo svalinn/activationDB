@@ -33,6 +33,6 @@ def populate_table(cur, data_dict):
     """
 
     cur.executemany(
-        "INSERT INTO alara_simulations (id, input_file, output_file, flux_file, git_hash) VALUES (?, ?, ?, ?, ?)",
+        "INSERT OR IGNORE INTO alara_simulations (id, input_file, output_file, flux_file, git_hash) VALUES (?, ?, ?, ?, ?)",
         list(zip(*data_dict.values())),
     )

@@ -21,7 +21,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
         else:
             output_path = out_file_folder + "/" + inp_filename + "_out"
             run_lbl = str(uuid.uuid4())
-            flux_file = training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx][2]
+            _, flux_norm, flux_file = training_inp_info[rel_on_time_factor_idx, flux_norm_factor_idx, flux_file_idx]
             all_flux_entries = adf_to_sqlite.open_flux_file(flux_file+flux_path_modifier)
             # 286 = # of stable target nuclides
             num_groups = int(len(all_flux_entries) / 286)
@@ -38,7 +38,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             t_irr = schedule_transforms.flatten_schedule(sch_tree)[0]
 
             t_irr_arr_mod = np.asarray([t_irr]*len(adf))
-            adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod)
+            adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod, flux_norm)
             conn_cursor = adf_to_sqlite.write_to_sqlite(adf, sqlite_conn)
 
             alara_bookkeeping.create_sqlite_table(conn_cursor)

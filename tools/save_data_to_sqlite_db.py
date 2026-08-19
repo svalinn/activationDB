@@ -30,15 +30,13 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             adf = create_adf.generate_single_adf(run_lbl, output_path)
             adf = adf_to_sqlite.modify_adf_for_db(adf)
 
-
             lines = sched_post_processor.read_out(output_path)
             pulse_dict = sched_post_processor.read_pulse_histories(lines)
             sch_tree = sched_post_processor.make_nested_dict(lines)
             sch_tree = sched_post_processor.add_ph_to_sch_tree(sch_tree, pulse_dict)['top_schedule']['children']
             t_irr = schedule_transforms.flatten_schedule(sch_tree)[0]
 
-            t_irr_arr_mod = np.asarray([t_irr]*len(adf))
-            adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod, flux_norm)
+            adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr, flux_norm)
             conn_cursor = adf_to_sqlite.write_to_sqlite(adf, sqlite_conn)
 
             alara_bookkeeping.create_sqlite_table(conn_cursor)

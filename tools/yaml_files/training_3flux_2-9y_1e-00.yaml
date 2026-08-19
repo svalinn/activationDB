@@ -40,7 +40,6 @@ flux_files :
   - /userspace/asrajendra/research/activationDB/flux_files/iter_dt
   - /userspace/asrajendra/research/activationDB/flux_files/frascati_ng
   - /userspace/asrajendra/research/activationDB/flux_files/fnsf
-  - /userspace/asrajendra/research/activationDB/flux_files/tud_ng
 
 sqlite_db_name : activation_results.db
 

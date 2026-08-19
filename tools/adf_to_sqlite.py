@@ -46,8 +46,8 @@ def average_flux(flux_array, t_irr, flux_norm):
     :param: t_irr: (float) total irradiation time over which flux is applied
     :param: flux_norm (float) normalization factor that flux array is multiplied by
     '''
-    total_flux = np.sum(flux_array, axis=1) * flux_norm
-    avg_flux_arr = total_flux / t_irr
+    total_flux = np.sum(flux_array, axis=1)
+    avg_flux_arr = total_flux * flux_norm / t_irr
     return avg_flux_arr
 
 

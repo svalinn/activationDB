@@ -26,7 +26,6 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             # 286 = # of stable target nuclides
             num_groups = int(len(all_flux_entries) / 286)
             flux_array = adf_to_sqlite.parse_flux_str(all_flux_entries, num_groups)
-            norm_flux_arr = adf_to_sqlite.normalize_flux(flux_array)
             adf = create_adf.generate_single_adf(run_lbl, output_path)
             adf = adf_to_sqlite.modify_adf_for_db(adf)
 
@@ -36,7 +35,7 @@ def save_out_to_db(training_inp_info, filename_array, inp_file_folder, out_file_
             sch_tree = sched_post_processor.add_ph_to_sch_tree(sch_tree, pulse_dict)['top_schedule']['children']
             t_irr = schedule_transforms.flatten_schedule(sch_tree)[0]
 
-            adf = adf_to_sqlite.map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr, flux_norm)
+            adf = adf_to_sqlite.map_adf_flux_tirr(adf, flux_array, sqlite_conn, t_irr, flux_norm)
             conn_cursor = adf_to_sqlite.write_to_sqlite(adf, sqlite_conn)
 
             alara_bookkeeping.create_sqlite_table(conn_cursor)

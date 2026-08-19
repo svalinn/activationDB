@@ -26,16 +26,17 @@ def test_normalize_flux(flux_arr, exp_norm_flux_arr):
     obs_norm_flux_arr = ats.normalize_flux(flux_arr)
     assert obs_norm_flux_arr.all() == exp_norm_flux_arr.all()
 
-@pytest.mark.parametrize( "flux_arr, t_irr, exp_avg_flux_arr",
+@pytest.mark.parametrize( "flux_arr, t_irr, flux_norm, exp_avg_flux_arr",
                           [
                             (np.array([[2,4,6,8,10], [2,4,6,8,20]]), 
                              5,
-                             np.array([30/5, 40/5])
+                             0.5,
+                             np.array([30*0.5/5, 40*0.5/5])
                             )
                           ])
 
-def test_average_flux(flux_arr, t_irr, exp_avg_flux_arr):
-    obs_avg_flux_arr = ats.average_flux(flux_arr, t_irr)
+def test_average_flux(flux_arr, t_irr, flux_norm, exp_avg_flux_arr):
+    obs_avg_flux_arr = ats.average_flux(flux_arr, t_irr, flux_norm)
     assert obs_avg_flux_arr.all() == exp_avg_flux_arr.all()    
 
 @pytest.mark.parametrize( "adf",

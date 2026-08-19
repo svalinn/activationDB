@@ -76,6 +76,6 @@ volume : 1
 trunc_tolerance : 1e-04
 
 temp_inp_file_folder : /userspace/asrajendra/research/activationDB/temp_dir/training_dir/input_files
-inp_file_folder : /userspace/asrajendra/research/permanent_storage/training_dir/input_files/trunc_tol_1e-04
-out_file_folder: /userspace/asrajendra/research/permanent_storage/training_dir/output_files/trunc_tol_1e-04
+inp_file_folder : /userspace/asrajendra/research/permanent_storage/training_files/input_files/trunc_tol_1e-04
+out_file_folder: /userspace/asrajendra/research/permanent_storage/training_files/output_files/trunc_tol_1e-04
 git_hash : 567bc40bc4c239692aa0fa93977674b86980d75e

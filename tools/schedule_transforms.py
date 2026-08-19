@@ -19,6 +19,8 @@ total duration and fluence.
     'delay_dur' : (float)
 }
 ]
+The pulse history may also be structured as an iterable of (int, float, str), but
+only the first two entries are used in this script.
 '''
 def flatten_pulse_history(pulse_length, pulse_history):
     """
@@ -33,7 +35,7 @@ def flatten_pulse_history(pulse_length, pulse_history):
     :param pulse_length: (float) the duration of each pulse
     :param pulse_history : (int, float) of # pulses, dwell time
     """
-    num_pulses, dwell_time = pulse_history
+    num_pulses, dwell_time = pulse_history[:2]
     duration_flat = (num_pulses-1) * (pulse_length + dwell_time) + pulse_length
     fluence_flat = num_pulses * pulse_length
 
@@ -48,7 +50,7 @@ def compress_pulse_history(pulse_length, pulse_history):
     :param pulse_length: (float) the duration of each pulse
     :param pulse_history : (int, float) of # pulses, dwell time
     '''
-    num_pulses, _ = pulse_history
+    num_pulses, _ = pulse_history[:2]
     sched_children_dur_comp = num_pulses * pulse_length
 
     return sched_children_dur_comp
@@ -66,7 +68,7 @@ def flatten_ph_exact_pulses(pulse_length, pulse_history,
     :param pulse_history: (int, float) of total # pulses, dwell time
     :param num_final_pulses: (int) the number of final pulses
     '''
-    num_tot_pulses, dwell_time = pulse_history
+    num_tot_pulses, dwell_time = pulse_history[:2]
     num_init_pulses = num_tot_pulses - num_final_pulses
     sched_children_dur_flat_exact_pulses, fluence_flat_exact_pulses = flatten_pulse_history(pulse_length, (num_init_pulses, dwell_time))
     return sched_children_dur_flat_exact_pulses, fluence_flat_exact_pulses

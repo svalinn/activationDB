@@ -38,6 +38,19 @@ def normalize_flux(flux_array):
     return norm_flux_arr
 
 
+def average_flux(flux_array, t_irr, flux_norm=1):
+    '''
+    Obtain the total flux by summing over the bin widths of the flux array,
+    then divide the total flux by an array of total irradiation times to obtain average flux magnitudes.
+    :param: flux_array: (numpy array of shape # intervals x # energy groups)
+    :param: t_irr: (float) total irradiation time over which flux is applied
+    :param: flux_norm (float) normalization factor that flux array is multiplied by
+    '''
+    total_flux = np.sum(flux_array, axis=1)
+    avg_flux_arr = total_flux * flux_norm / t_irr
+    return avg_flux_arr
+
+
 def find_flux_spec_shape_id(sqlite_conn, flux_spec_shape):
     '''
     Assuming that a table called flux_spectra exists in the database, find
@@ -76,20 +89,20 @@ def modify_adf_for_db(adf):
     return adf
 
 
-def map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod):
+def map_adf_flux_tirr(adf, flux_array, sqlite_conn, t_irr):
     '''
     Finds the unique block names in the adf and maps the correct flux spectrum
     to the block. Assigns a column to store irradiation time.
     :param: norm_flux_arr: numpy array of flux spectrum shape (# intervals x # energy groups)
-    :param: t_irr_arr_mod: numpy array of irradiation times where the total number of entries
-    is the number of rows in the adf
+    :param: t_irr: (float) total irradiation time over which flux is applied
     '''
-
+    norm_flux_arr = normalize_flux(flux_array)
+    avg_flux_arr = average_flux(flux_array, t_irr)
     block_names = adf['block_name'].unique()
-    for unique_bn, flux_spec_shape in zip(block_names, norm_flux_arr):
+    for unique_bn, flux_spec_shape, avg_flux_mag in zip(block_names, norm_flux_arr, avg_flux_arr):
         flux_spec_shape_id = find_flux_spec_shape_id(sqlite_conn, flux_spec_shape)
-        adf.loc[adf["block_name"] == unique_bn, "flux_spec_shape_id"] = flux_spec_shape_id
-    adf['t_irr'] = t_irr_arr_mod
+        adf.loc[adf["block_name"] == unique_bn, ["flux_spec_shape_id", "avg_flux_mag"]] = [flux_spec_shape_id, avg_flux_mag]
+    adf['t_irr'] = np.array([t_irr]*len(adf))
     return adf
 
 def write_to_sqlite(adf, sqlite_conn):

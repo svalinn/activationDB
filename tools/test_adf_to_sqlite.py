@@ -72,7 +72,7 @@ def test_modify_adf_for_db(adf):
     assert (all(col in adf
                 for col in ["num_dens_(atoms/cm3)", "half_life", "block_name"]))
 
-@pytest.mark.parametrize( "test_adf, flux_array, sqlite_conn, t_irr, exp_mod_adf",
+@pytest.mark.parametrize( "test_adf, flux_array, sqlite_conn, t_irr, flux_norm, exp_mod_adf",
                           [
                             (aop.ALARADFrame(data=
                             {"num_dens_(atoms/cm3)": [5.678e-11]*2,
@@ -92,6 +92,7 @@ def test_modify_adf_for_db(adf):
                                     }.values()))
                                     ).connection,
                             5,
+                            0.5,
                             aop.ALARADFrame(data=
                             {"num_dens_(atoms/cm3)": [5.678e-11]*2,
                             "block_name": ["Be", "W"],
@@ -99,14 +100,14 @@ def test_modify_adf_for_db(adf):
                             "half_life": ["-1"]*2,
                             "run_lbl": ["test_case", "test_case"],
                             "flux_spec_shape_id" : [1,2],
-                            "avg_flux_mag" : [5,6],
+                            "avg_flux_mag" : [5*0.5,6*0.5],
                             "t_irr" : [5]*2
                             })
                             )
                           ])
 
-def test_map_adf_flux_tirr(test_adf, flux_array, sqlite_conn, t_irr, exp_mod_adf):
-    obs_mod_adf = ats.map_adf_flux_tirr(test_adf, flux_array, sqlite_conn, t_irr)
+def test_map_adf_flux_tirr(test_adf, flux_array, sqlite_conn, t_irr, flux_norm, exp_mod_adf):
+    obs_mod_adf = ats.map_adf_flux_tirr(test_adf, flux_array, sqlite_conn, t_irr, flux_norm)
     pd.testing.assert_frame_equal(obs_mod_adf, exp_mod_adf, check_dtype=False)
 
 @pytest.mark.parametrize( "mod_adf",

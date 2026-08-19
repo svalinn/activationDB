@@ -38,7 +38,7 @@ def normalize_flux(flux_array):
     return norm_flux_arr
 
 
-def average_flux(flux_array, t_irr, flux_norm=1):
+def average_flux(flux_array, t_irr, flux_norm):
     '''
     Obtain the total flux by summing over the bin widths of the flux array,
     then divide the total flux by an array of total irradiation times to obtain average flux magnitudes.
@@ -89,7 +89,7 @@ def modify_adf_for_db(adf):
     return adf
 
 
-def map_adf_flux_tirr(adf, flux_array, sqlite_conn, t_irr):
+def map_adf_flux_tirr(adf, flux_array, sqlite_conn, t_irr, flux_norm):
     '''
     Finds the unique block names in the adf and maps the correct flux spectrum
     to the block. Assigns a column to store irradiation time.
@@ -97,7 +97,7 @@ def map_adf_flux_tirr(adf, flux_array, sqlite_conn, t_irr):
     :param: t_irr: (float) total irradiation time over which flux is applied
     '''
     norm_flux_arr = normalize_flux(flux_array)
-    avg_flux_arr = average_flux(flux_array, t_irr)
+    avg_flux_arr = average_flux(flux_array, t_irr, flux_norm)
     block_names = adf['block_name'].unique()
     for unique_bn, flux_spec_shape, avg_flux_mag in zip(block_names, norm_flux_arr, avg_flux_arr):
         flux_spec_shape_id = find_flux_spec_shape_id(sqlite_conn, flux_spec_shape)

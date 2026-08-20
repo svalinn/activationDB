@@ -13,7 +13,8 @@ def create_sqlite_table(cur):
         output_file TEXT,
         flux_file TEXT,
         git_hash TEXT,
-        UNIQUE(input_file, output_file)
+        UNIQUE(input_file, output_file),
+        FOREIGN KEY (flux_file) REFERENCES flux_spectra(flux_file)
         )
     """
     )

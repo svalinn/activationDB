@@ -4,7 +4,7 @@ import sqlite3
 import uuid
 
 @pytest.mark.parametrize(
-    "cur,data_dict",
+    "cur,data_dict,exp_foreign_keys",
     [
         (
             sqlite3.connect(":memory:").cursor().executescript(
@@ -33,15 +33,22 @@ import uuid
                 "flux_file": ["f_2", "f_3"],
                 "git_hash": ["gh_5", "gh_7"],
             },
+            [(0, 0, 'flux_spectra', 'flux_file', 'flux_file', 'NO ACTION', 'NO ACTION', 'NONE')]
         ),
     ],
 )
-def test_populate_table(cur, data_dict):
+def test_populate_table(cur, data_dict, exp_foreign_keys):
     """
     Ensure that the "INSERT into" statement was executed successfully.
     """
     ab.create_sqlite_table(cur)
     ab.populate_table(cur, data_dict)
     rows = cur.execute("SELECT * from alara_simulations").fetchall()
+    obs_foreign_keys = cur.execute(
+    """
+    PRAGMA foreign_key_list('alara_simulations')
+    """
+    ).fetchall()
     assert len(rows) == len(data_dict["run_lbl"])
+    assert obs_foreign_keys == exp_foreign_keys
     cur.connection.close()

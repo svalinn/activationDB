@@ -2,11 +2,12 @@ def create_sqlite_table(cur):
     """
     Creates a sqlite table. The combination of input file and output file
     must be unique for each entry. If a different output file exists for the same input file,
-    the associated git commit hash is necessarily different.
+    the associated git commit hash is necessarily different. Assumes that a table called
+    flux_spectra already exists.
     :param cur: Cursor object for the SQLite connection
     """
     cur.execute(
-        """
+    """
     CREATE TABLE IF NOT EXISTS alara_simulations (
         id TEXT PRIMARY KEY,
         input_file TEXT,

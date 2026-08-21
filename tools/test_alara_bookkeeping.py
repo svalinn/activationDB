@@ -7,18 +7,25 @@ import uuid
     "cur,data_dict",
     [
         (
-            sqlite3.connect(":memory:").cursor().execute(
+            sqlite3.connect(":memory:").cursor().executescript(
                 """
+                PRAGMA foreign_keys=ON;
+                CREATE TABLE flux_spectra (
+                flux_file TEXT UNIQUE
+                );
+                INSERT INTO flux_spectra (flux_file) VALUES ('f_2');
+                INSERT INTO flux_spectra (flux_file) VALUES ('f_3');
                 CREATE TABLE alara_simulations (
                 id TEXT PRIMARY KEY,
                 input_file TEXT,
                 output_file TEXT,
                 flux_file TEXT,
                 git_hash TEXT,
-                UNIQUE(input_file, output_file)
-                )
+                UNIQUE(input_file, output_file),
+                FOREIGN KEY (flux_file) REFERENCES flux_spectra(flux_file)
+                );
                 """
-            ),
+                ),
             {
                 "id": [str(uuid.uuid4()), 5],
                 "input_file": ["inp_1", "inp_2"],
@@ -31,10 +38,8 @@ import uuid
 )
 def test_populate_table(cur, data_dict):
     """
-    Ensure that the "INSERT into" statement was executed successfully,
-    without committing the operation into the actual database.
+    Ensure that the "INSERT into" statement was executed successfully.
     """
-    cur.execute("BEGIN") # stops subsequent statements (e.g. CREATE TABLE) from being committed automatically
     ab.create_sqlite_table(cur)
     ab.populate_table(cur, data_dict)
     rows = cur.execute("SELECT * from alara_simulations").fetchall()

@@ -101,6 +101,36 @@ def test_map_adf_flux_tirr(test_adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod, 
                                    check_dtype=False)
     assert all(obs_mod_adf["t_irr"]) == all(exp_mod_adf["t_irr"])
 
+@pytest.mark.parametrize( "sqlite_conn, exp_foreign_keys",
+                          [
+                            (
+                            sqlite3.connect(":memory:").cursor().executescript(
+                            """
+                            PRAGMA obs_foreign_keys=1;
+                            CREATE TABLE IF NOT EXISTS flux_spectra
+                            (flux_spec_shape_id INT PRIMARY KEY);
+                            CREATE TABLE IF NOT EXISTS alara_simulations
+                            (id TEXT PRIMARY KEY);
+                            """
+                            ).connection,
+                            [(1, 0, 'alara_simulations', 'run_lbl', 'id', 'NO ACTION', 'NO ACTION', 'NONE'),
+                            (0, 0, 'flux_spectra', 'flux_spec_shape_id', 'flux_spec_shape_id', 'NO ACTION', 'NO ACTION', 'NONE')
+                            ]
+                            )
+                          ]
+                          )
+
+def test_create_num_dens_table(sqlite_conn, exp_foreign_keys):
+    ats.create_num_dens_table(sqlite_conn)
+    # Returns a list of tuples
+    obs_foreign_keys = sqlite_conn.cursor().execute(
+    """
+    PRAGMA foreign_key_list('number_densities');
+    """
+    ).fetchall()
+    # SQLite assigns a higher foreign key id (i.e. tuple[0]) to the columns assigned with foreign keys first
+    assert sorted(obs_foreign_keys) == sorted(exp_foreign_keys)
+
 @pytest.mark.parametrize( "mod_adf",
                           [
                             (aop.ALARADFrame(data=

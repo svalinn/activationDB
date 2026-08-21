@@ -106,14 +106,14 @@ def test_map_adf_flux_tirr(test_adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod, 
                             (
                             sqlite3.connect(":memory:").cursor().executescript(
                             """
-                            PRAGMA obs_foreign_keys=1;
                             CREATE TABLE IF NOT EXISTS flux_spectra
                             (flux_spec_shape_id INT PRIMARY KEY);
                             CREATE TABLE IF NOT EXISTS alara_simulations
                             (run_lbl TEXT PRIMARY KEY);
                             """
                             ).connection,
-                            [(1, 0, 'alara_simulations', 'run_lbl', 'run_lbl', 'NO ACTION', 'NO ACTION', 'NONE'),
+                            [
+                            (1, 0, 'alara_simulations', 'run_lbl', 'run_lbl', 'NO ACTION', 'NO ACTION', 'NONE'),
                             (0, 0, 'flux_spectra', 'flux_spec_shape_id', 'flux_spec_shape_id', 'NO ACTION', 'NO ACTION', 'NONE')
                             ]
                             )

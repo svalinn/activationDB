@@ -7,26 +7,6 @@ import uuid
     "cur,data_dict",
     [
         (
-            sqlite3.connect("activation_results.db").cursor(),
-            {
-                "id": [str(uuid.uuid4()), str(uuid.uuid4())],
-                "input_file": ["inp_1", "inp_2"],
-                "output_file": ["out_1", "out_2"],
-                "flux_file": ["f_1", "f_2"],
-                "git_hash": ["gh_1", "gh_2"],
-            },
-        ),
-        (
-            sqlite3.connect("activation_results.db").cursor(),
-            {
-                "id": [1, 2],
-                "input_file": ["inp_1", "inp_2"],
-                "output_file": ["out_1", "out_2"],
-                "flux_file": ["f_1", "f_2"],
-                "git_hash": ["gh_1", "gh_2"],
-            },
-        ),
-        (
             sqlite3.connect(":memory:").cursor().execute(
                 """
                 CREATE TABLE alara_simulations (

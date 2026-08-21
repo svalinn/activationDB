@@ -9,7 +9,7 @@ def create_sqlite_table(cur):
     cur.execute(
     """
     CREATE TABLE IF NOT EXISTS alara_simulations (
-        id TEXT PRIMARY KEY,
+        run_lbl TEXT PRIMARY KEY,
         input_file TEXT,
         output_file TEXT,
         flux_file TEXT,
@@ -26,7 +26,7 @@ def populate_table(cur, data_dict):
     :param cur: Cursor object for the SQLite connection
     :param data_dict: dictionary containing information for the database, with structure:
     {
-        "id": iterable of str/int,
+        "run_lbl": iterable of str/int,
         "input_file": iterable of str,
         "output_file": iterable of str,
         "flux_file": iterable of str,
@@ -35,6 +35,6 @@ def populate_table(cur, data_dict):
     """
 
     cur.executemany(
-        "INSERT INTO alara_simulations (id, input_file, output_file, flux_file, git_hash) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO alara_simulations (run_lbl, input_file, output_file, flux_file, git_hash) VALUES (?, ?, ?, ?, ?)",
         list(zip(*data_dict.values())),
     )

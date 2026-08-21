@@ -16,7 +16,7 @@ import uuid
                 INSERT INTO flux_spectra (flux_file) VALUES ('f_2');
                 INSERT INTO flux_spectra (flux_file) VALUES ('f_3');
                 CREATE TABLE alara_simulations (
-                id TEXT PRIMARY KEY,
+                run_lbl TEXT PRIMARY KEY,
                 input_file TEXT,
                 output_file TEXT,
                 flux_file TEXT,
@@ -27,7 +27,7 @@ import uuid
                 """
                 ),
             {
-                "id": [str(uuid.uuid4()), 5],
+                "run_lbl": [str(uuid.uuid4()), 5],
                 "input_file": ["inp_1", "inp_2"],
                 "output_file": ["out_5", "out_7"],
                 "flux_file": ["f_2", "f_3"],
@@ -43,5 +43,5 @@ def test_populate_table(cur, data_dict):
     ab.create_sqlite_table(cur)
     ab.populate_table(cur, data_dict)
     rows = cur.execute("SELECT * from alara_simulations").fetchall()
-    assert len(rows) == len(data_dict["id"])
+    assert len(rows) == len(data_dict["run_lbl"])
     cur.connection.close()

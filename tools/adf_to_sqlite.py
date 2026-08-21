@@ -99,12 +99,13 @@ def create_num_dens_table(sqlite_conn):
     populating the database.
     '''
     cur = sqlite_conn.cursor()
-    cur.executescript("""
+    cur.executescript(
+    """
     PRAGMA foreign_keys = ON;
     CREATE TABLE IF NOT EXISTS number_densities (
         run_lbl TEXT,
         flux_spec_shape_id INTEGER,
-        FOREIGN KEY (run_lbl) REFERENCES alara_simulations(id),
+        FOREIGN KEY (run_lbl) REFERENCES alara_simulations(run_lbl),
         FOREIGN KEY (flux_spec_shape_id) REFERENCES flux_spectra(flux_spec_shape_id)
     );
     """)

@@ -92,6 +92,24 @@ def map_adf_flux_tirr(adf, norm_flux_arr, sqlite_conn, t_irr_arr_mod):
     adf['t_irr'] = t_irr_arr_mod
     return adf
 
+def create_num_dens_table(sqlite_conn):
+    '''
+    Initializes a table called number_densities in the database.
+    This is done so that foreign keys may be established prior to
+    populating the database.
+    '''
+    cur = sqlite_conn.cursor()
+    cur.executescript(
+    """
+    PRAGMA foreign_keys = ON;
+    CREATE TABLE IF NOT EXISTS number_densities (
+        run_lbl TEXT,
+        flux_spec_shape_id INTEGER,
+        FOREIGN KEY (run_lbl) REFERENCES alara_simulations(run_lbl),
+        FOREIGN KEY (flux_spec_shape_id) REFERENCES flux_spectra(flux_spec_shape_id)
+    );
+    """)
+
 def write_to_sqlite(adf, sqlite_conn):
     '''
     Initialize a connection to a SQLite database, and write the adf

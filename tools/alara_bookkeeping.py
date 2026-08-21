@@ -6,8 +6,9 @@ def create_sqlite_table(cur):
     flux_spectra already exists.
     :param cur: Cursor object for the SQLite connection
     """
-    cur.execute(
+    cur.executescript(
     """
+    PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS alara_simulations (
         run_lbl TEXT PRIMARY KEY,
         input_file TEXT,
@@ -16,7 +17,7 @@ def create_sqlite_table(cur):
         git_hash TEXT,
         UNIQUE(input_file, output_file),
         FOREIGN KEY (flux_file) REFERENCES flux_spectra(flux_file)
-        )
+        );
     """
     )
 

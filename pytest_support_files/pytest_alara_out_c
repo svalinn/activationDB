@@ -1,0 +1,44 @@
+ALARA 2.9.2
+top_schedule 'sch_1':
+	pulse_entry: 1 y pulse_history ph_1 delay 0 s
+pulse_history: 'ph_1':
+	 num_pulsing_levels: 1
+	 num_pulses_per_level: [10]
+	 delay_seconds_per_level: [5]
+
+Zone output requested:
+	Response Units: Bq /cm3
+	Specific Activity [Bq/cm3]
+
+
+*** Specific Activity [Bq/cm3] ***
+
+Zone #1: zone_1
+	Relative Volume: 10
+	Containing mixture: mix_1
+
+Total (All constituents) 
+	COMPACTED
+	Volume Fraction: 1	Relative Volume: 10
+Specific Activity [Bq/cm3]
+isotope  t_1/2(s)   pre-irrad   shutdown   
+======================
+h-3 	3.8911e+08  0.0000e+00  3.6107e+09  
+be-10 	5.0492e+13  0.0000e+00  5.1420e+05  
+b-12 	2.0200e-02  0.0000e+00  3.1832e+09  
+b-13 	1.7400e-02  0.0000e+00  9.1136e+09  
+c-14 	1.8082e+11  0.0000e+00  1.4456e+06  
+======================
+total   0           0.0000e+00  1.5909e+10  
+
+Totals for all zones.
+Specific Activity [Bq/cm3]
+zone	 shutdown   
+======================
+1	1.5909e+10  	zone_1 (mix_1)
+======================
+
+
+
+
+

@@ -22,7 +22,37 @@ import yaml
 import polars as pl
 import numpy as np
 
-def optimize_estimator_hyperparams(X_train, Y_train):
+from calculate_nuclide_error import prep_arrays_for_measures, create_error_measures
+
+def score_measure_A(y_true, y_pred, parent_nuc, child_nucs):
+    L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
+        parent_nuc, child_nucs, y_pred, y_true
+    )
+    measure_A, _, _ = create_error_measures(
+        L_ref, L_test, arr_ref, arr_test
+    )
+    return -np.nanmean(np.abs(measure_A - 1))
+
+def score_measure_B(y_true, y_pred, parent_nuc, child_nucs):
+    L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
+        parent_nuc, child_nucs, y_pred, y_true
+    )
+    _, measure_B, _ = create_error_measures(
+        L_ref, L_test, arr_ref, arr_test
+    )
+    return -np.nanmean(measure_B)
+
+
+def score_measure_C(y_true, y_pred, parent_nuc, child_nucs):
+    L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
+        parent_nuc, child_nucs, y_pred, y_true
+    )
+    _, _, measure_C = create_error_measures(
+        L_ref, L_test, arr_ref, arr_test
+    )
+    return np.nanmean(measure_C)
+
+def optimize_estimator_hyperparams(X_train, Y_train, scoring_metric, parent_nuc, retained_child_nucs):
 
     pipeline = Pipeline([
         ("scaler", StandardScaler()),
@@ -40,11 +70,34 @@ def optimize_estimator_hyperparams(X_train, Y_train):
         "regressor__p": [1, 2],
     }
 
+    if scoring_metric == "measure_A":
+        scoring_dict = {
+        'measure_A': lambda estimator, X, y: score_measure_A(
+        y, estimator.predict(X), parent_nuc, retained_child_nucs
+        )
+        }
+
+    elif scoring_metric == "measure_B":
+        scoring_dict = {
+        'measure_B': lambda estimator, X, y: score_measure_B(
+        y, estimator.predict(X), parent_nuc, retained_child_nucs
+        )
+        }
+
+    elif scoring_metric == "measure_C":
+        scoring_dict = {
+        'measure_C': lambda estimator, X, y: score_measure_C(
+        y, estimator.predict(X), parent_nuc, retained_child_nucs
+        )
+        }
+
+
     grid_search = GridSearchCV(
         estimator=pipeline,
         param_grid=params,
         cv=5,
-        scoring="neg_mean_squared_error",
+        scoring=scoring_dict,
+        refit=list(scoring_dict.keys())[0],
         n_jobs=-1,
         pre_dispatch="n_jobs",
         verbose=2,
@@ -55,7 +108,7 @@ def optimize_estimator_hyperparams(X_train, Y_train):
     return grid_search
 
 
-def save_optimized_model(grid_search, parent_nuc, nonzero_child_indices):
+def save_optimized_model(grid_search, parent_nuc, nonzero_child_indices, scoring_metric):
 
     joblib.dump(
         {
@@ -63,12 +116,12 @@ def save_optimized_model(grid_search, parent_nuc, nonzero_child_indices):
             "parent_nuc": parent_nuc,
             "nonzero_child_indices": nonzero_child_indices,
         },
-        f"{parent_nuc}_knn_model.joblib",
+        f"{parent_nuc}_knn_{scoring_metric}_model.joblib",
     )
 
     joblib.dump(
         grid_search,
-        f"{parent_nuc}_grid_search_results.joblib",
+        f"{parent_nuc}_grid_search_{scoring_metric}_results.joblib",
     )
 
 
@@ -90,6 +143,12 @@ def parse_args():
                         type=int,
                         required=True,
                         help="Index of the parent nuclide to train")
+    parser.add_argument('--scoring_metric',
+                        '-s',
+                        type=str,
+                        required=True,
+                        help="Type of scoring metric used for the grid search, one of" \
+                        "measure_A, measure_B, or measure_C")
 
     args = parser.parse_args()
 
@@ -125,7 +184,9 @@ def main():
     parent_nuc = parent_nucs[parent_idx]
     df_csv_name = inputs['df_csv_name']
 
-    text_file = open(f'knn_per_parent_{parent_nuc}_prints.txt', 'w')
+    scoring_metric = args.scoring_metric
+
+    text_file = open(f'knn_per_parent_{parent_nuc}_{scoring_metric}_prints.txt', 'w')
 
     conn = sqlite3.connect(db_name)
 
@@ -185,7 +246,11 @@ def main():
     print(f"Final testing Y shape: {Y_test.shape}",
         file=text_file)
 
-    grid_search = optimize_estimator_hyperparams(X_train, Y_train)
+    retained_child_nucs = [
+    child_nucs[i] for i in nonzero_child_indices
+    ]
+    
+    grid_search = optimize_estimator_hyperparams(X_train, Y_train, scoring_metric, parent_nuc.replace(":","-"), retained_child_nucs)
     best_model = grid_search.best_estimator_
     Y_pred = best_model.predict(X_test)
 
@@ -207,10 +272,6 @@ def main():
         np.mean((Y_test - Y_pred) ** 2, axis=0)
     )
 
-    retained_child_nucs = [
-        child_nucs[i] for i in nonzero_child_indices
-    ]
-
     metrics_df = pl.DataFrame({
         "child_nuc": retained_child_nucs,
         "MAE": child_mae,
@@ -218,7 +279,7 @@ def main():
     })
 
     metrics_df.write_csv(
-        f"{parent_nuc}_knn_test_metrics.csv"
+        f"{parent_nuc}_knn_{scoring_metric}_test_metrics.csv"
     )
 
     np.savez_compressed(
@@ -233,9 +294,9 @@ def main():
     )
 
 
-    save_optimized_model(grid_search, parent_nuc, nonzero_child_indices)
+    save_optimized_model(grid_search, parent_nuc, nonzero_child_indices, scoring_metric)
 
-    removed_filename = (f"{parent_nuc}_removed_parent_child_combinations.npy")
+    removed_filename = (f"{parent_nuc}_{scoring_metric}_removed_parent_child_combinations.npy")
 
     np.save(removed_filename, np.array(removed_parent_child, dtype=object))
 

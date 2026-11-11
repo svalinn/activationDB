@@ -23,12 +23,13 @@ import polars as pl
 import numpy as np
 
 from calculate_nuclide_error import prep_arrays_for_measures, create_error_measures
+from sklearn.metrics import make_scorer
 
 def score_measure_A(y_true, y_pred, parent_nuc, child_nucs):
     L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
         parent_nuc, child_nucs, y_pred, y_true
     )
-    measure_A, _, _ = create_error_measures(
+    measure_A, _, _, _ = create_error_measures(
         L_ref, L_test, arr_ref, arr_test
     )
     return -np.nanmean(np.abs(measure_A - 1))
@@ -37,7 +38,7 @@ def score_measure_B(y_true, y_pred, parent_nuc, child_nucs):
     L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
         parent_nuc, child_nucs, y_pred, y_true
     )
-    _, measure_B, _ = create_error_measures(
+    _, measure_B, _, _ = create_error_measures(
         L_ref, L_test, arr_ref, arr_test
     )
     return -np.nanmean(measure_B)
@@ -47,10 +48,19 @@ def score_measure_C(y_true, y_pred, parent_nuc, child_nucs):
     L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
         parent_nuc, child_nucs, y_pred, y_true
     )
-    _, _, measure_C = create_error_measures(
+    _, _, measure_C, _ = create_error_measures(
         L_ref, L_test, arr_ref, arr_test
     )
     return np.nanmean(measure_C)
+
+def score_measure_D(y_true, y_pred, parent_nuc, child_nucs):
+    L_ref, L_test, arr_ref, arr_test = prep_arrays_for_measures(
+        parent_nuc, child_nucs, y_pred, y_true
+    )
+    _, _, _, measure_D = create_error_measures(
+        L_ref, L_test, arr_ref, arr_test
+    )
+    return -np.nanmean(measure_D)
 
 def optimize_estimator_hyperparams(X_train, Y_train, scoring_metric, parent_nuc, retained_child_nucs):
 
@@ -72,25 +82,43 @@ def optimize_estimator_hyperparams(X_train, Y_train, scoring_metric, parent_nuc,
 
     if scoring_metric == "measure_A":
         scoring_dict = {
-        'measure_A': lambda estimator, X, y: score_measure_A(
-        y, estimator.predict(X), parent_nuc, retained_child_nucs
+        "measure_A": make_scorer(
+        score_measure_A,
+        greater_is_better=True,
+        parent_nuc=parent_nuc,
+        child_nucs=retained_child_nucs
         )
         }
 
     elif scoring_metric == "measure_B":
         scoring_dict = {
-        'measure_B': lambda estimator, X, y: score_measure_B(
-        y, estimator.predict(X), parent_nuc, retained_child_nucs
+        "measure_B": make_scorer(
+            score_measure_B,
+            greater_is_better=True,
+            parent_nuc=parent_nuc,
+            child_nucs=retained_child_nucs
         )
         }
 
     elif scoring_metric == "measure_C":
         scoring_dict = {
-        'measure_C': lambda estimator, X, y: score_measure_C(
-        y, estimator.predict(X), parent_nuc, retained_child_nucs
+        "measure_C": make_scorer(
+            score_measure_C,
+            greater_is_better=True,
+            parent_nuc=parent_nuc,
+            child_nucs=retained_child_nucs
         )
         }
 
+    elif scoring_metric == "measure_D":
+        scoring_dict = {
+        "measure_D": make_scorer(
+            score_measure_D,
+            greater_is_better=True,
+            parent_nuc=parent_nuc,
+            child_nucs=retained_child_nucs
+        )
+        }
 
     grid_search = GridSearchCV(
         estimator=pipeline,
@@ -148,7 +176,7 @@ def parse_args():
                         type=str,
                         required=True,
                         help="Type of scoring metric used for the grid search, one of" \
-                        "measure_A, measure_B, or measure_C")
+                        "measure_A, measure_B, measure_C, or measure_D")
 
     args = parser.parse_args()
 
@@ -283,7 +311,7 @@ def main():
     )
 
     np.savez_compressed(
-        f"{parent_nuc}_knn_test_results.npz",
+        f"{parent_nuc}_knn_{scoring_metric}_test_results.npz",
         Y_test=Y_test,
         Y_pred=Y_pred,
         nonzero_child_indices=nonzero_child_indices,

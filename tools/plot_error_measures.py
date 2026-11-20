@@ -42,7 +42,7 @@ def make_step_plots(step_axes,
                     title_str,
                     plot_path_name,
                     log_x=False):
-    plt.figure()
+    plt.figure()       
     plt.step(*step_axes, where='post')
     if log_x:
         plt.xscale('log')
@@ -52,6 +52,20 @@ def make_step_plots(step_axes,
     plt.grid(True)
     plt.savefig(plot_path_name)
     plt.close()
+
+def calculate_per_child_child_sum_ratios(predicted_densities, true_densities, parent_nuc, retained_child_nucs):
+    child_sum_ratios = np.ndarray((len(retained_child_nucs)), dtype=object)
+    parent_in_children_idx = retained_child_nucs.index(parent_nuc)
+    for child_nuc_idx, child_nuc in enumerate(retained_child_nucs):
+        child_response_sum_p_removed, child_rel_sample_responses_p_removed = prep_arrays_for_measures(
+            parent_nuc, [child_nuc, parent_nuc],
+            predicted_densities[:,[child_nuc_idx, parent_in_children_idx]], true_densities[:,[child_nuc_idx,
+                                                                                            parent_in_children_idx]])
+        child_sum_ratios[child_nuc_idx] = create_error_measures(child_response_sum_p_removed,
+                                            child_rel_sample_responses_p_removed)['child_sum_ratio']
+    child_sum_ratios = np.delete(child_sum_ratios, parent_in_children_idx)   
+    child_sum_ratios = {"child_sum_ratio" : np.column_stack(child_sum_ratios)} 
+    return child_sum_ratios
 
 
 def parse_args():
@@ -101,29 +115,29 @@ def main():
     plot_folder = args.plot_folder
     inputs = read_yaml(yaml_arg)
 
-    parent_nuc = args.parent_nuc
     
     for scoring_metric in [
             "child_sum_ratio", "norm_abs_diff", "cosine_similarity",
             "norm_rel_diff"
     ]:
+        parent_nuc = args.parent_nuc
         with open('prep_sql_for_ml_model.yaml', 'r') as yaml_file:
             inputs = yaml.safe_load(yaml_file)
         filename = f"{parent_nuc}_knn_{scoring_metric}_test_results.npz"
         with np.load(filename) as data:
             # Y_test is already filtered by nonzero_child_indices, and \
             # by construction Y_pred has the same size as Y_test
-            true_densities = data['Y_test']
-            predicted_densities = data['Y_pred']
+            true_densities = np.array(data['Y_test'])
+            predicted_densities = np.array(data['Y_pred'])
             nonzero_child_indices = data['nonzero_child_indices']
-
         child_nucs = inputs['child_nucs']
         retained_child_nucs = [
             child_nucs[nonzero_idx] for nonzero_idx in nonzero_child_indices
         ]
 
+        parent_nuc = parent_nuc.replace(":","-")
         response_sum_p_removed, rel_sample_responses_p_removed = prep_arrays_for_measures(
-            parent_nuc.replace(":","-"), retained_child_nucs,
+            parent_nuc, retained_child_nucs,
             predicted_densities, true_densities)
         err_measures = create_error_measures(response_sum_p_removed,
                                              rel_sample_responses_p_removed)
@@ -160,10 +174,10 @@ def main():
 
         plot_path_names = [
             Path(
-                f'{plot_folder}/{parent_nuc.replace(":","-")}_{scoring_metric}_sample_ecdf.png'
+                f'{plot_folder}/{parent_nuc}_{scoring_metric}_sample_ecdf.png'
             ),
             Path(
-                f'{plot_folder}/{parent_nuc.replace(":", "-")}_{scoring_metric}_weighted_sample_ecdf.png'
+                f'{plot_folder}/{parent_nuc}_{scoring_metric}_weighted_sample_ecdf.png'
             )
         ]
 
@@ -173,8 +187,7 @@ def main():
                             x_label_string,
                             y_label_string,
                             title_str,
-                            plot_path_name,
-                            log_x=False)
+                            plot_path_name)
             log_x_plot_path_name = plot_path_name.with_stem(
                 plot_path_name.stem + '_log_x')
             make_step_plots(step_axes,
@@ -183,6 +196,103 @@ def main():
                             title_str,
                             log_x_plot_path_name,
                             log_x=True)
+
+        sorted_child_densities = true_densities[ecdf_valid_mask][sorted_indices, :]   
+
+
+        cumulative_child_density_fractions = np.divide(
+            (np.cumsum(sorted_child_densities, axis=0)),
+            (np.sum(sorted_child_densities, axis=0)),
+            out = np.full_like(
+                (np.cumsum(sorted_child_densities, axis=0)), np.nan
+            ),
+            where=(np.sum(sorted_child_densities, axis=0) != 0))
+
+        # ------------- plot using per sample error begins
+        plt.figure()
+        for child_nuc_idx, child_nuc in enumerate(retained_child_nucs):
+
+            plt.step(
+                sorted_errors,
+                cumulative_child_density_fractions[:, child_nuc_idx],
+                where='post',
+                label=child_nuc
+            )
+        plt.xscale('log')
+        plt.xlabel(x_label_string)
+        plt.ylabel('Cumulative fraction of total child number density')
+        plt.title(f'{parent_nuc} {scoring_metric} Child Number Density-Weighted ECDF')
+        plt.grid(True)
+        plt.legend(
+            loc="best"
+            )
+        plt.savefig(
+            f'{plot_folder}/{parent_nuc}_{scoring_metric}_all_children_weighted_ecdf.png'
+        )
+        plt.close()
+        # plot using per sample error ends
+
+        # weighted plot using per-nuclide error begins
+        if scoring_metric == "child_sum_ratio":
+            child_sum_ratios = calculate_per_child_child_sum_ratios(
+                    predicted_densities,
+                    true_densities,
+                    parent_nuc,
+                    retained_child_nucs
+                )
+
+            child_measure_error = make_plotting_errors(scoring_metric, child_sum_ratios)
+
+            child_ecdf_valid_mask = np.isfinite(child_measure_error)
+
+            true_densities_p_removed = np.delete(
+                true_densities,
+                retained_child_nucs.index(parent_nuc),
+                axis=1
+            )
+
+            child_retained_nucs = retained_child_nucs.copy()
+            child_retained_nucs.pop(retained_child_nucs.index(parent_nuc))
+
+            plt.figure()
+
+            for child_nuc_idx, child_nuc in enumerate(child_retained_nucs):
+
+                child_valid_mask = child_ecdf_valid_mask[:, child_nuc_idx]
+
+                child_valid_errors = child_measure_error[child_valid_mask, child_nuc_idx]
+                child_valid_densities = true_densities_p_removed[child_valid_mask, child_nuc_idx]
+
+                child_sorted_indices = np.argsort(child_valid_errors)
+
+                child_sorted_errors = child_valid_errors[child_sorted_indices]
+                child_sorted_densities = child_valid_densities[child_sorted_indices]
+
+                child_cumulative_density_fractions = np.divide(
+                    np.cumsum(child_sorted_densities),
+                    np.sum(child_sorted_densities),
+                    out=np.full_like(np.cumsum(child_sorted_densities), np.nan),
+                    where=np.sum(child_sorted_densities) != 0
+                )
+
+                plt.step(
+                    child_sorted_errors,
+                    child_cumulative_density_fractions,
+                    where='post',
+                    label=child_nuc
+                )
+
+            plt.xscale('log')
+            plt.xlabel(x_label_string + "Calculated Per Child")
+            plt.ylabel('Cumulative fraction of total child number density')
+            plt.title(f'{parent_nuc} {scoring_metric} Child Number Density-Weighted ECDF Using Per-Child Error')
+            plt.grid(True)
+            plt.legend(loc="best")
+
+            plt.savefig(
+                f'{plot_folder}/{parent_nuc}_{scoring_metric}_all_children_weighted_ecdf_per_child_error.png'
+            )
+            plt.close()
 
 
 if __name__ == "__main__":
